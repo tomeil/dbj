@@ -1,0 +1,76 @@
+data/dbj - change history
+
+== 3.0.0 ==
+ * addon working with j602 and j701
+
+== 3.0.1 ==
+ * added JHS GUI and dbjsrv.ijs
+
+== 3.1.0 ==
+ * j701: dropped j602 support
+
+== 3.1.1 ==
+ * dbjsrv.ijs merged in dbjgui.ijs
+
+== 3.2.0 ==
+ * WD gui merged in dbjgui.ijs
+
+== 3.2.1 ==
+ * allow dbj installation also in user/projects
+
+== 3.3.0 ==
+ * saved as binary feature replaced with save encrypted
+
+== 3.3.1 ==
+ * bug fixing and alignment with upcoming J8 version
+
+== 4.0.0 ==
+ * j801: jqt GUI - dropped j701 support
+
+== 4.0.1 ==
+ * bug fixing and restyling of jqt GUI
+
+== 4.0.2 ==
+ * bug fixing of Android port - new icon theme
+
+== 4.0.3 ==
+ * dbj jhs server improvement - new dbjhs.conf
+
+== 4.1.0 ==
+ * virtual grid in dbjgui.ijs
+
+== 4.1.1 ==
+ * bug fixing of virtual grid
+
+== 4.1.2 ==
+ * jview class included in dbjgui.ijs
+
+== 4.1.3 ==
+ * dbjgui disable controls when executing commands
+
+== 4.2.0 ==
+ * j802: jzgrid replaced by qt table - two-windows GUI
+
+== 4.2.1 ==
+ * menu removed from GUI
+
+== 4.2.2 ==
+ * back to single-window GUI
+
+== 4.2.3 ==
+ * removed workaround for jqt errors - menu comes back - comments for all verbs
+
+== 4.2.4 ==
+ * bug fixing and documentation
+
+== 4.3.0 ==
+ * j803 and joxygen doc
+
+== 4.3.1 ==
+ * plot allowed in console environment - new mgmt for cell changes in GUI - fkey ebnabled - removed joxygen doc
+
+== 4.3.2 ==
+ * j804 and minor changes in GUI
+
+== 4.3.3 ==
+ * PHP header output

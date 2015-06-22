@@ -1,0 +1,12 @@
+[Desktop Entry]
+Comment=DataBase Management System developed in J language
+# Exec=/usr/lib/j8/bin/jqt -js "load'~user/projects/dbj/dbj.ijs'" "dbj<'db1'"
+# Icon=/home/lorenzo/j8/projects/dbj/images/dbj.svg
+Exec=/usr/lib/j8/bin/jqt -js "load'data/dbj'" "dbj<'db1'"
+Icon=/home/lorenzo/j8/addons/data/dbj/images/dbj.svg
+Name=dbj
+GenericName=J Database
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Application;Development;

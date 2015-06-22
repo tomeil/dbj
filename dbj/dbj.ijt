@@ -1,0 +1,627 @@
+LABTITLE=: 'dbj Database Management System'
+
+NB. =========================================================
+Lab Section dbj Database Management System
+dbj is a database management system (DBMS) developed in J language.
+
+The system includes the following main J scripts:
+
+- dbj.ijs which is the DBMS engine
+
+- dbjgui.ijs which realizes the optional GUI
+
+dbj can be installed as J addon in the directory:
+
+jpath '~addons/data/dbj/'
+
+or as an user project in the directory:
+
+jpath '~user/projects/dbj/'
+
+Now, let we load the script.
+)
+
+3 : 0 ''
+if. fexist jpath'~addons/data/dbj/manifest.ijs' do.
+  load 'data/dbj'
+else.
+  load '~user/projects/dbj/dbj.ijs'
+end.
+)
+
+NB. =========================================================
+Lab Section
+To open an existing database we use the command:
+
+   dbj 'dbname'
+
+Boxing the database name, we get the GUI:
+
+   dbj <'dbname'
+
+If the dbname does not exist, a dbname directory is created by dbj verb in the directory:
+
+jpath '~user/dbj/'
+
+'db1' is the name of the default database.
+
+Now we will open a database called 'dbtest' (without GUI),
+creating a new instance of the dbj class.
+
+The result of dbj verb is the locative of the newly created database.
+
+The name and the locative of the last opened database are also stored
+in DBN_dbj_ and DBB_dbj_, respectively.
+)
+
+]DB=: dbj 'dbtest'
+DBN_dbj_
+DBB_dbj_
+
+NB. =========================================================
+Lab Section
+dbj manages two basic types of objects: tables and queries;
+both types of objects are stored as plain text ASCII files in the same
+database directory (jpath '~user/dbj/dbname').
+All file names, as well as field names, should be valid J names,
+avoiding spaces, final underscore and double underscore
+(which are used in J for locales).
+
+For each dbj database, a special character is defined as field separator;
+the default field separator is the character '|'.
+
+A file containing a dbj table is composed by a table head (the first row),
+and a table body with a row for each record.
+The rows are separated by the LF character.
+Each row uses the field separator as fret. For example:
+
+ ID:i|Value
+ 1|a
+ 2|bb
+ 3|ccc
+
+The first row of the table defines the field names; the first field
+on the left is the key field; in a dbj table the key field is always
+present and the correspondent column must hold unique values.
+The colon ':' can be used in each field name to specify the field
+type; five types are allowed: 's' for string (default), 'i' for integer,
+'f' for float, 'c' for complex, 'b' for boxed. See script documentation
+for other information, which can be included in field types.
+
+Let we create a file like this for our demo (but we could use any text editor).
+)
+
+table1=: 0 : 0
+ID:i|Value
+1|a
+2|bb
+3|ccc
+)
+table1 fwrites jpath '~user/dbj/dbtest/table1'
+
+NB. =========================================================
+Lab Section
+Now we call kreset''; the output lists the content of the database.
+table1 should be listed as a database object.
+)
+
+kreset__DB''
+
+NB. =========================================================
+Lab Section
+The k verb is the main verb which returns an object of the database.
+What we get is a 'dbj dynaset'.
+)
+
+k__DB 'table1'
+
+NB. =========================================================
+Lab Section
+dbj provides many verbs to process dynasets.
+
+For example, the kaddcol verb adds (or modifies) fields in a dynaset, with the
+possibility to use the J syntax and to refer to other fields as J names.
+)
+
+]newdyn=: ('RootID=.%:ID';'ValueID=.Value icat ID') kaddcol__DB k__DB 'table1'
+
+NB. =========================================================
+Lab Section
+We can save the new dynaset as a table in the database.
+
+Note the use of ke verb, which is equivalent to the k verb (applied to
+the last opened database), but is available in the 'z' locale.
+)
+
+newdyn ksave__DB 'table2'
+ke 'table2'
+
+NB. =========================================================
+Lab Section
+But we can also save the commands which generates the dynaset,
+as a query in the database. The k verb accepts as argument a
+query name as well a table name.
+
+Note that you don't need to use a locative for dbj verbs
+inside the left argument of kaddcol, neither inside the left
+argument of ksave.
+)
+
+'(''RootID=.%:ID'';''ValueID=.Value icat ID'') kaddcol k''table1''' ksave__DB 'query2'
+ke 'query2'
+
+NB. =========================================================
+Lab Section
+Queries are the second type of dbj objects, and like tables
+are saved in the same directory of database, as plain ASCII files.
+
+When a query is saved by the ksave verb, the ']' character is automatically
+added at beginning of file, in order to distinguish queries from tables.
+
+The kinfo verb lists the database objects with their properties.
+)
+
+kinfo__DB''
+
+NB. =========================================================
+Lab Section
+Let we have a better look to the output provided by kinfo.
+
+For each OBJECT, there is the FIRSTROW and SIZE of corresponding file.
+
+The QUERY field indicates if the object is a query (1) or a table (0).
+
+The NFIELD and NREC fields indicate the number or columns and rows of the dynaset (if it is cached).
+
+The MEMORY field reports if the dynaset is actually cached (size in bytes) or not (_1).
+
+The DEPEND field lists, for cached queries, the objects from which the query depends.
+
+The use of the cache allows to read table files and process query commands
+only the first time we access them, speeding up further calls.
+
+kreset'' removes all dynasets from cache. The cache is physically allocated in
+the file
+
+jpath '~user/temp/dbname.ijf'
+
+kreset'objname' removes just an object from cache.
+)
+
+kreset__DB 'query2'
+
+NB. =========================================================
+Lab Section
+Cache can be enabled/disabled assigning values 1/0 to the
+variable DBC.
+
+Some queries are not suitable to be cached. These special queries
+can be saved with an additional ']' at beginning, or can be called
+with krd verb (which always reads and executes file content) instead
+of k verb.
+
+See the following example where we use the krnd verb, which selects
+random records from a dynaset.
+)
+
+'1&krnd kint i.10' ksave__DB 'query1'
+k__DB 'query1'
+k__DB 'query1'
+k__DB 'query1'
+
+']1&krnd kint i.10' ksave__DB 'query1'
+k__DB 'query1'
+k__DB 'query1'
+k__DB 'query1'
+
+NB. =========================================================
+Lab Section
+This section shows the use of the two most important verbs for
+selecton of data inside a dynaset:
+
+krow selects records by key value
+
+kcol selects fields by name
+)
+
+kinfo__DB''
+'query2' krow__DB ('SIZE';'MEMORY') kcol__DB kinfo__DB''
+
+NB. =========================================================
+Lab Section
+In a dbj dynaset the key field is the first column: this field is
+always present and must have unique and non-empty values.
+Also the head row, which holds the field names,
+must have unique and non-empty values.
+
+The kcol verb always preserves the key field. The kfield verb instead
+can select columns also changing/removing the original key field; so, the key
+field can become a new one, and the resulting dynaset could have less records.
+If key values are not unique, the last one is the good one.
+)
+
+'4|bb' kaddrow__DB k__DB 'table1'
+('Value';'ID') kfield__DB '4|bb' kaddrow__DB k__DB 'table1'
+
+NB. =========================================================
+Lab Section
+The kfind verb allows to select records from a dbj text file which holds a table,
+without reading the whole file, but just mapping it in memory (see jmf).
+
+The ksearch verb instead performs a full text search of a string on a mapped file.
+
+The following two examples are equivalent to:
+
+1 3 krow__DB k__DB 'table1'
+
+'bb' klocate__DB k__DB 'table1'
+)
+
+1 3 kfind__DB jpath '~user/dbj/dbtest/table1'
+'bb' ksearch__DB jpath '~user/dbj/dbtest/table1'
+
+NB. =========================================================
+Lab Section
+A dbj dynaset is always a 2-rows boxed table with a 1-row head and a
+1-row body. The body is an inverted table, as described in the J wiki
+at the page http://www.jsoftware.com/jwiki/Essays/Inverted_Table
+
+The testk verb checks if its argument is a valid dbj dynaset, returning
+the number of records and fields; otherwise, an error is returned.
+
+In general, all verbs starting with 'k' produce a valid dynaset.
+)
+
+kgrid__DB 5 10
+testk__DB kgrid__DB 5 10
+
+NB. =========================================================
+Lab Section
+Now we'll see some verbs, which don't return valid dynasets,
+but must have a valid dynaset as right argument.
+
+icol and irow are similar to kcol and krow, but produce
+inverted tables, i.e. just the body of the dynaset.
+
+ifield returns the unboxed content of just a single field of a dynaset.
+
+cell return the unboxed content of a single element of a dynaset.
+)
+
+]mydyn=: (('N'&,)@:(,&':i')@:": each >:i.12),:,.each <"1|:(>:i.10) */  >:i.12
+testk__DB mydyn
+(5;6;7) irow__DB mydyn
+('N5';'N6';'N7') icol__DB mydyn
+'N6' ifield__DB mydyn
+(6;'N6') cell__DB mydyn
+
+NB. =========================================================
+Lab Section
+headk returns the head of a dynaset.
+
+ibody returns the body of the dynaset, which is an inverted table.
+
+ifb and bfi are verbs which transform a table inverted from boxed and vice-versa.
+)
+
+headk__DB mydyn
+$ headk__DB mydyn
+ibody__DB mydyn
+$ ibody__DB mydyn
+bfi__DB ibody__DB mydyn
+$ bfi__DB ibody__DB mydyn
+
+NB. =========================================================
+Lab Section
+Next example shows the use of kplot verb, which draws graphic plots.
+
+plotk does the same, but its output is not a valid dynaset.
+
+In JHS plot is saved as canvas in a html page ('~temp/plot.html').
+)
+
+('N';'P';'M') kplot__DB ('P=.*:N';'M=.-*:N') kaddcol__DB kint__DB i:_10
+
+NB. =========================================================
+Lab Section
+The ksurface verb is available for 3D plots.
+
+The left argument can be used to provide other plot options.
+)
+
+ksurface__DB sin */~ 0.1*i:25
+
+NB. =========================================================
+Lab Section
+kbmp returns a dynaset from a bmp image file,
+and displays that image.
+
+kimg accepts also jpg and png images.
+)
+
+kbmp__DB DBV__DB,'/images/dbj.bmp'
+
+NB. =========================================================
+Lab Section
+Both kbmp and kimg verbs use krgb, whose argument is an integer matrix holding
+a bitmapped image.
+
+krgb uses viewrgb verb of jviewmat class.
+)
+
+krgb__DB 256*i.256 256
+
+NB. =========================================================
+Lab Section
+karray returns a dbj dynaset from any numeric rank-1 or rank-2 array.
+For this verb, field names and key values are automatically generated.
+
+kviewmat gives the same result of karray, providing also a graphical view of such array.
+In JHS the image is saved as bmp file ('~temp/viewmat.bmp').
+)
+
+karray__DB 5 5 $ (i:12) j. (i:_12)
+(|: 3 256 $ i.256) kviewmat__DB 5 5 $ (i:12) j. (i:_12)
+
+NB. =========================================================
+Lab Section
+This example shows the use of ktrans verb, to transpose a dynaset.
+
+The tbk verb open the dynaset in a qt table widget. Here the
+data can be edited and, when the widget is closed, the result
+is available in TBK.
+)
+
+]newdyn=: ('Exp=.^N';'Log=.^.N') kaddcol__DB kcomplex__DB 0 j. >:i.5
+tbk__DB 1 ktrans__DB newdyn
+
+NB. =========================================================
+Lab Section
+Grouping is a very important feature in a DBMS; the kgroup verb
+provides this function.
+
+As usual, refer to comments inside the dbj.ijs script for a better
+understandig of the verb syntax.
+)
+
+]newdyn=: 'U=.toupper A' kaddcol__DB 64 65 66 97 98 krow__DB kascii__DB''
+kgroup__DB newdyn;'U'
+('#';'A';'+/';'N') kgroup__DB newdyn;'U'
+
+NB. =========================================================
+Lab Section
+The first row of the dynaset (the head) contains the names and types
+of the fields, but can also include other information, useful in the 
+GUI and in the management of relational databases.
+
+The concept is to link a field of a dynaset with a field of an other
+dynaset. Now we will create table3, having a field linked with query2.
+)
+
+table3=: 0 : 0
+Key|LinkedValue:i[query2][ValueID]
+k01|1
+k02|2
+k03|3
+k04|3
+k05|2
+k06|1
+)
+table3 fwrites jpath '~user/dbj/dbtest/table3'
+kreset__DB''
+
+NB. =========================================================
+Lab Section
+The k verb accepts also a left argument, to perform further processing
+of the output dynaset (refer to k verb definition for details).
+
+In particular, 0&k is able to transform the linked
+fields, according to the type definition.
+
+Note that the type of the linked field must be the same of the key of
+referenced dynaset (integer in our example).
+)
+
+k__DB 'query2'
+k__DB 'table3'
+0&k__DB 'table3'
+
+NB. =========================================================
+Lab Section
+The iconv verb, which has a more complicated syntax, is useful in
+conjunction with kaddcol, in order to convert a single field; iconv
+does not use the information of the dynaset's head.
+
+Note also the ka adverb, which transforms a name applying to it the
+k verb (this can be useful just to save some parenthesis).
+)
+
+('query2'ka__DB;'ValueID') iconv__DB 'LinkedValue' ifield__DB k__DB 'table3'
+('query2'ka__DB;'ValueID') iconv__DB 1 2 4 3
+
+NB. =========================================================
+Lab Section
+ktable creates a new dynaset with a single instruction.
+
+It accepts as right argument a string which defines a table
+Next example shows also the auto-indexing feature available
+for the key field.
+)
+
+ktable__DB 'ID:101|Value',LF,'a',LF,'bb',LF,'ccc'
+
+
+NB. =========================================================
+Lab Section
+Also kdefine creates a new dynaset with a single instruction.
+
+The following example shows also an additional feature
+available in the type definition: the calculated fields.
+)
+
+(<"0,.>:i.26) kdefine__DB 'ID:i';'VALUE:s(ID#"1(96+ID){a.)'
+
+NB. =========================================================
+Lab Section
+kazsort and kzasort are the verbs for sorting dynasets.
+They make numerical sort for numeric fields,
+and alphabetical sort for string and boxed fields.
+
+Left argument is optional and indicates the field names on which
+the sorting is requested.
+)
+
+kzasort__DB k__DB 'table3'
+'LinkedValue' kazsort__DB 0&k__DB 'table3'
+
+NB. =========================================================
+Lab Section
+kfilter is the verb for filtering dynasets. Like kaddcol,
+kfilter has a left argument (a string), where field names can be
+used as J names. Each name is a rank-2 array.
+
+For string comparison the ieq dyad should be used (this allows to
+ignore the trailing blanks in the strings).
+)
+
+'2<LinkedValue' kfilter__DB k__DB 'table3'
+'''bb2'' ieq LinkedValue' kfilter__DB 0&k__DB 'table3'
+'''c'' iss LinkedValue' kfilter__DB 0&k__DB 'table3'
+
+NB. =========================================================
+Lab Section
+kdel verb deletes an object from the database.
+
+Attention: the corresponding file is really deleted from the filesystem.
+)
+
+kdel__DB 'table3'
+kinfo__DB''
+
+NB. =========================================================
+Lab Section
+A dynaset can be generated starting from
+the contents of files and directories of your filesystem.
+
+kdir, kdirtree, kfolder are verbs which returns different dynasets
+based on the contents of a directory.
+)
+
+kdir__DB jpath'~user/temp'
+
+Lab Section
+kfile reads the content of a text file in a dbj dynaset, one record
+for each row.
+)
+
+kfile__DB DBV__DB,'/manifest.ijs'
+
+NB. =========================================================
+Lab Section
+When a dynaset has a string field where records have different length,
+the string array where J stores that field is filled of trailing blanks.
+
+In these cases, boxed fields instead of string can be used to save
+space in memory. Anyway, visualization of a dynaset containing boxed
+fields is less clean than other.
+)
+
+aa=: kfile__DB DBV__DB,'/manifest.ijs'
+bb=: ktoboxed__DB aa
+bb
+7!:5 <'aa'
+7!:5 <'bb'
+
+NB. =========================================================
+Lab Section
+A set of verbs is provided to change the field types of a dynaset.
+
+These are: ktoint, ktofloat, ktocomplex, ktostring, ktoboxed and kunbox.
+)
+
+'RootID' ktostring__DB k__DB 'table2'
+'ValueID' ktoint__DB k__DB 'table2'
+
+NB. =========================================================
+Lab Section
+k, kinfo, ksave, ksavej, krd, kreset, kupdate, kdel, closek
+(and some other few verbs) are the methods of the dbj class,
+which work on an opened database, and must be used always with
+the correspondent locative.
+
+Other dbj methods can be used with the common '_dbj_' locative.
+
+The kn verb provides a dynaset with the list of
+all existing instances of the dbj class, with associated locatives.
+)
+
+kn_dbj_''
+
+NB. =========================================================
+Lab Section
+To close the database we can use the closek method,
+which is an alias of the destroy method,
+or the dbjdestroy verb, which closes all instances of dbj class.
+Anyway, leaving a database open has not side effects.
+)
+
+closek__DB''
+kn_dbj_''
+  
+NB. =========================================================
+Lab Section
+kl lists existing databases in the user directory,
+providing also the list of objects stored in each database.
+
+ke (dyadic form), opens an instance of an existing database,
+executes the k verb, and finally closes the instance.
+
+ke (monadic form), is equivalent to k verb (monadic form),
+applied to the last opened database.
+
+ke, kn, kl can be used either when there is an opened database,
+or when there is not; these verbs are also exported to the 'z' locale.
+)
+
+kl''
+'dbtest' ke ''
+'dbtest' ke 'query2'
+
+NB. =========================================================
+Lab Section
+At the end of this lab, let we try the dbj GUI, which is slightly
+different in the two possible environments (JQT and JHS),
+even if similar controls are available for all.
+Following notes are applicable mainly to JQT GUI.
+
+and are also
+A large set of commands are available in several toolbars,
+and most important commands have keyboard shortcuts.
+Here we just remember the purpose of main controls.
+
+There is a top-left combo box, which holds the
+names of available databases; this allows to select a database,
+and then to open it.
+
+The white text area is the input control for the queries;
+its content can be saved as query with the Save Query button, or directly
+executed with the Exec button. The output is shown in the grid below.
+The grid is the default wiew of the dynaset, but also other views are
+available: Text (editable), ASCII, HTML, HREF.
+
+The grid area has editable cells; its content can be saved as table with the
+Save Table button, or enabling the Auto-Save feature. The left side of the bottom status
+bar indicates if the content is aligned with an existing object, and the grid dimensions.
+Many commands/buttons in the window can modify the grid content, but
+this content could not be a valid dbj dynaset, until we select the Clean Table command.
+
+An other combo box holds the
+names of database objects, and it is also used for the input of names of
+new objects to be saved. Each object can be loaded and displayed in
+the grid with the Goto button. Also the object definition is displayed
+in the upper text area.
+
+When the GUI window will be closed, also the database will be closed.
+)
+
+dbj <'dbtest'
