@@ -1,7 +1,7 @@
 # dbj
 Database management system for J
 
-1. Introduction
+1 - Introduction
 
 dbj is a database management system (DBMS) developed in J language.
 
@@ -15,7 +15,7 @@ dbjgui.ijs which realizes the GUI-Graphical User Interface for J8 (WD and JHS).
 The addon is available for Windows and Linux platforms.
 
 
-2. Opening a Database
+2 - Opening a Database
 
 In J environment (jqt, jhs or jconsole), dbj can be loaded with:
 
@@ -44,7 +44,7 @@ c:\jfolder\bin\jqt.exe -js "load'data/dbj'" "dbj<'dbname'" (Windows)
 /jfolder/bin/jqt -js "load'data/dbj'" "dbj<'dbname'" (Linux)
 
 
-3. Database Files
+3 - Database Files
 
 A dbj database is composed by a set of files stored in a directory under the directory jpath '~user/dbj/' (for example: '~user/dbj/dbname/').
 
@@ -55,7 +55,7 @@ All file names, as well as field names (see below), should be valid J names, avo
 For each dbj database, a special character is defined as field separator; the default field separator is the character '|'. The optional left argument of the dbj verb is the field separator used in the dbj tables.
 
 
-4. Table Structure
+4 - Table Structure
 
 A file containing a dbj table is composed by a table head (the first row), and a table body, with a row for each record.
 
@@ -97,14 +97,14 @@ VALUE:s(ID#"1(96+ID){a.)
 
 The table body contains data: when the table is loaded, the dbj engine removes eventual inconsistencies, according with the following main rules:
 
-    the key field must contain unique values; in case of duplicated values, the last one is the good one; the key field cannot contain empty strings;
-    the same rule is applied to the field names in the first row;
-    data are initially read as text, and then converted to numbers or boxes according with the field type;
-    records having missed data are filled with default values ('' for string, 0 for numeric fields);
-    some escape sequencies are recognized in string fields (see escape verb).
+- the key field must contain unique values; in case of duplicated values, the last one is the good one; the key field cannot contain empty strings;
+- the same rule is applied to the field names in the first row;
+- data are initially read as text, and then converted to numbers or boxes according with the field type;
+- records having missed data are filled with default values ('' for string, 0 for numeric fields);
+- some escape sequencies are recognized in string fields (see escape verb).
 
 
-5. Query Syntax
+5 - Query Syntax
 
 A file containing a dbj query is composed by one or more J sentences; in order to distinguish queries from tables, the first sentence of the query must always start with the ']' character (Same monad).
 
@@ -118,7 +118,7 @@ The following examples shows two queries generating the same table of above:
 ]'VALUE=.''a'';''bb'';''ccc''' kaddfield 'ID' kint >:i.3
 
 
-6. dbj Dynasets
+6 - dbj Dynasets
 
 When a dbj object is loaded from the correspondent ASCII file, either table or query, the dbj engine generates a dbj dynaset, which is always a 2-rows boxed table with a head row and a body row.
 
@@ -126,15 +126,15 @@ The head contains only boxed strings (the field names and types).
 
 The body, which holds data, is an inverted table, as described in the J wiki at the page http://www.jsoftware.com/jwiki/Essays/Inverted_Table; the differences between the body of a dbj dynaset and the inverted table described in the J wiki are the following:
 
-    numeric and boxed fields are always stored as rank 2 arrays, with N rows and 1 column, being N the number of records of the dbj dynaset;
-    the first field, either string or numeric, must hold unique values, and empty string are not allowed.
+- numeric and boxed fields are always stored as rank 2 arrays, with N rows and 1 column, being N the number of records of the dbj dynaset;
+- the first field, either string or numeric, must hold unique values, and empty string are not allowed.
 
 The main disadvantage of inverted tables against boxed tables is that string fields having items of different length are filled of blanks, and this can lead, in some cases, to excessive memory occupation; in these cases boxed fields should be used instead of string. Boxed fields hold always strings, and should be avoided when are not really necessary, also because the table visualization is not clean as with string fields. Boxed fields can be added to an existing dbj dynaset with kboxcol, kboxfield or ktoboxed verbs.
 
 The testk verb is available to check if a boxed array is a valid dbj dynaset.
 
 
-7. The k Method
+7 - The k Method
 
 The most important verb (see related comments for details) is the k method, which returns a database object, reading tables and/or executing queries:
 
@@ -151,7 +151,7 @@ When the object is called again, and no changes have occurred in files, the obje
 Queries starting with double square bracket ']]' are not stored in cache and are executed every time the object is called.
 
 
-8. Other dbj Verbs
+8 - Other dbj Verbs
 
 A large set of verbs are provided to operate and process dbj dynasets. Generally, verbs with name starting with 'k' give a valid dynaset as result; for example, krow selects records, kcol selects fields, kaddfield adds or modifies fields, kaddrow adds or modifies records, etc.
 
@@ -162,7 +162,7 @@ k, kinfo, ksave, ksavej, krd, kreset, kupdate, kdel, closek (and some other few 
 ke, kl, kn, dbj, dbjlab, dbjdestroy are the public verbs available in the 'z' locale.
 
 
-9. GUI Features
+9 - GUI Features
 
 Two types of GUI are available: WD and JHS.
 
@@ -170,18 +170,18 @@ The dbj GUI allows an easy interaction with the dbj engine. In the WD GUI, two m
 
 Working with the GUI, the speed is reduced due to the graphics management, but many additional features are available using the large set of controls (buttons, combo, etc.) and menu commands; for example:
 
-    easy table editing inside the grid
-    automatic conversion of linked fields with use of combo-boxes
-    find and replace functions
-    dynaset view in standard HTML browser
-    dedicated commands for common operations (sort, insert records, etc.)
-    database management (save as table, save as query, delete, etc.)
-    auto-save table while editing
-    optional event log
-    macro execution (sequence of operations)
-    macro autoexec (if file exists jpath '~user/dbj/dbname.ijm')
-    open and save dynasets as Excel files
-    print, help, font selection, zoom and other facilities
+- easy table editing inside the grid
+- automatic conversion of linked fields with use of combo-boxes
+- find and replace functions
+- dynaset view in standard HTML browser
+- dedicated commands for common operations (sort, insert records, etc.)
+- database management (save as table, save as query, delete, etc.)
+- auto-save table while editing
+- optional event log
+- macro execution (sequence of operations)
+- macro autoexec (if file exists jpath '~user/dbj/dbname.ijm')
+- open and save dynasets as Excel files
+- print, help, font selection, zoom and other facilities
 
 A similar set of controls are also available in JHS GUI.
 
