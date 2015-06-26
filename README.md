@@ -1,5 +1,5 @@
 # dbj
-Database management system for J
+Database management system for J (http://www.jsoftware.com)
 
 1 - Introduction
 
