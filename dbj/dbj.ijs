@@ -1031,7 +1031,7 @@ closek=: destroy
 
 NB.=====================================================================
 NB.*k v return a database object, being y (a string) the object name
-NB.+if the object is yet loaded, it is immediately returned;
+NB.+if the object is yet loaded (i.e. cached), it is immediately returned;
 NB.+if the object exists, it is loaded by mean of krd verb;
 NB.+the object y is yet loaded if there is a component in the dbj keyfile;
 NB.+the object y exists if there is an entry in the DBD array;
@@ -1375,10 +1375,17 @@ kinfo y                                        NB. should return an empty table
 )
 
 NB.=====================================================================
-NB.*kreset v unload an object or all objects from cache of the active database
-NB.+erase the y variable in the dbj keyfile and update the DBD entry;
+NB.*kreset v unload objects from cache of the active database
+NB.+erase the y object(s) in the dbj keyfile and update the DBD entry;
+NB.+y is a string (the object to be unloaded) or a boxed list of strings;
+NB.+if y=0 unload all tables;
+NB.+if y=1 unload all queries;
+NB.+if y=_ unload all objects;
+NB.+as dyad, if x is not an empty string, the above objects are then reloaded;
 NB.+if y-:'' re-create the dbj keyfile and update all the DBD boxed array
 kreset=: 3 : 0
+''kreset y
+:
 assert. DBB=coname''
 if. ''-:y do.
   dbjdir=. 1 dir DBF                           NB. read again first row of each file
@@ -1393,14 +1400,28 @@ if. ''-:y do.
   end.
   kinfo''                                      NB. return updated info
 else.
-  sel=. 0{"1 DBD                               NB. boxed list of the objects in the database
-  if. (<y) e. sel do.
-    dbfile=. DBF,'/',y                         NB. pathname of the file
-    DBD=: ((<,y) i. sel) # DBD                 NB. removes previous entry in DBD (if any)
-    DBD=: /:~ DBD,y;(,fread1 dbfile);fsize <dbfile NB. updates entry in DBD array (first row and size of file)
+  sel=. 0{"1 DBD                               NB. boxed list of all objects in the database
+  if. 0-:y do.
+    y=. (-.;(']'&=@{. +. '(q)'&-:) each 1&{"1 DBD) # sel NB. boxed list of tables
+  elseif. 1-:y do.
+    y=. (;(']'&=@{. +. '(q)'&-:) each 1&{"1 DBD) # sel   NB. boxed list of queries
+  elseif. _-:y do.
+    y=. sel
+  elseif. do.
+    y=. (sel e. ,each boxopen y)#sel
+  end.
+  for_z. y do.
+    dbfile=. DBF,'/',>z                        NB. pathname of the file
+    DBD=: (z i. sel) # DBD                     NB. removes previous entry in DBD (if any)
+    DBD=: /:~ DBD,(>z);(,fread1 dbfile);fsize <dbfile NB. updates entry in DBD array (first row and size of file)
     if. DBC do.
       DBR=: (0 {"1 DBD) ,. a:
-      keydrop DBM;,y                           NB. erases object in the dbj keyfile
+      keydrop DBM;z                            NB. erases object in the dbj keyfile
+    end.
+  end.
+  if. -.''-:x do.                              NB. reloads objects
+    for_z. y do.
+      k >z
     end.
   end.
   kinfo y                                      NB. returns a table with info about unloaded object

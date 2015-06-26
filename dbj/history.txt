@@ -73,4 +73,4 @@ data/dbj - change history
  * j804 and minor changes in GUI
 
 == 4.3.3 ==
- * PHP header output
+ * PHP header output - kreset enhanced
