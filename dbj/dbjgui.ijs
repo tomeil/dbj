@@ -878,24 +878,25 @@ wd 'set sbar setlabel object "Object: ',TBN,' ',(":$TBB),'"'
 wd 'set sbar setlabel memory "Used Memory: ',mem,' MB"'
 wd 'set sbar setlabel exetim "Execution Time: ',tim,' s"'
 wd 'set sbar setlabel status "Ready [open]"'
+wd 'ide hide'
 wd 'timer 500' NB. set timer for macro autoexec and other stuff
-DBB
 )
 
 NB.=====================================================================
-NB.*sys_timer v manage ide hiding and macro autoplay after jqt gui is started
+NB.*sys_timer v manage macro autoplay after jqt gui is started
 sys_timer=: 3 : 0
 if. IFQT do.
   wd 'timer 0'
   cocurrent DBB_dbj_
   if. DBN-:('''';'')sr>{:;:>{:ARGV do. 
-    wd 'ide hide'
+    smoutput '   dbj <''',DBN,''''
   end.
   9!:7 '+++++++++|-'
   if. fexist jpath '~user/dbj/',DBN,'.ijo' do.
     playmacro jpath '~user/dbj/',DBN,'.ijo'
   end.
 end.
+smoutput DBB
 )
 
 NB.=====================================================================
@@ -989,8 +990,10 @@ dbnsave=. DBN
 if. 0 < # sel do.
   tbk_close 'reopen'
   try.                   NB. opens selected database
+    smoutput '   dbj <''',sel,''''
     dbj_dbj_ <sel
   catch.                 NB. re-opens previous database
+    smoutput '   dbj <''',dbnsave,''''
     dbj_dbj_ <dbnsave
   end.
 else.
@@ -1074,7 +1077,7 @@ TBZ=: wd 'qd'
 event_start'browsehtml';qry=. 'queryedit' lookup TBZ
 updategrid''
 (('dbj ',DBN)myhtml'<h2><tt>',(htmlreplace qry),'</tt></h2>',LF,dbjtohtml TBK) fwrite jpath '~temp/dbjout.htm'
-browse_j_ jpath '~temp/dbjout.htm'
+browse_j_ file2url jpath '~temp/dbjout.htm'
 event_stop'browsehtml'
 )
 
@@ -1085,7 +1088,7 @@ TBZ=: wd 'qd'
 event_start'browsehref';qry=. 'queryedit' lookup TBZ
 updategrid''
 (('dbj ',DBN)myhref'<h2><tt>',(htmlreplace qry),'</tt></h2>',LF,dbjtohref 0&k TBK) fwrite jpath '~temp/dbjout.htm'
-browse_j_ jpath '~temp/dbjout.htm'
+browse_j_ file2url jpath '~temp/dbjout.htm'
 event_stop'browsehref'
 )
 
@@ -1459,7 +1462,7 @@ NB.=====================================================================
 NB.*tbk_dbjhelp_button v show in default browser the dbj wiki page
 tbk_dbjhelp_button=: 3 : 0
 event_start,<'dbjhelp'
-browse_j_ DBV,'/help/dbjwiki.htm'
+browse_j_ file2url DBV,'/help/dbjwiki.htm'
 event_stop'dbjhelp'
 )
 
@@ -1467,7 +1470,7 @@ NB.=====================================================================
 NB.*tbk_jhelp_button v show in default browser the main j help page
 tbk_jhelp_button=: 3 : 0
 event_start,<'jhelp'
-browse_j_ jpath '~addons/docs/help/index.htm'
+browse_j_ file2url jpath '~addons/docs/help/index.htm'
 event_stop'jhelp'
 )
 
@@ -1531,6 +1534,7 @@ wd 'set dblist enable 0'
 wd 'set cryptsave enable 0'
 wd 'set autosave enable 0'
 wd 'set eventlog enable 0'
+wd 'set toggleide enable 0'
 wd 'set objectlist enable 0'
 wd 'set listtable enable 0'
 wd 'set listquery enable 0'
@@ -1588,6 +1592,7 @@ wd 'set dblist enable 1'
 wd 'set cryptsave enable 1'
 wd 'set autosave enable 1'
 wd 'set eventlog enable 1'
+wd 'set toggleide enable 1'
 wd 'set objectlist enable 1'
 wd 'set listtable enable 1'
 wd 'set listquery enable 1'
@@ -1608,6 +1613,12 @@ NB.*tbk_eventlog_button v enable/disable eventlog option
 tbk_eventlog_button=: 3 : 0
 if. DBG_dbj_=0 do. DBG_dbj_=: 1 else. DBG_dbj_=: 0 end.
 wd 'set eventlog ',":DBG_dbj_
+)
+
+NB.=====================================================================
+NB.*tbk_toggleide_button v enable/disable ide visibility
+tbk_toggleide_button=: 3 : 0
+wd 'ide ',(0".toggleide) pick 'hide';'show'
 )
 
 NB.=====================================================================
@@ -1726,8 +1737,10 @@ NB.=====================================================================
 NB.*tbk v display a dbj dynaset in a QTableWidget (editable grid)
 NB.+a toolbar is available to manage grid content
 NB.+several tabs allow to view the dynaset also as text and html
-NB.+the dynaset content can be viewed in Grid,Text,ASCII,HTML,HREF format
+NB.+the dynaset content can be viewed in Grid,Text,ASCII,HTML,HREF,isigrid format
+NB.+isigrid view is not yet fully working
 NB.+only the Grid and Text format are editable
+NB.+Grid, Text and HTML show the dynaset in source format
 NB.+when the widget is closed, TBK holds the edited table
 tbk=: 3 : 0
 0 tbk y
@@ -1919,6 +1932,8 @@ elseif. 2=TBO do.
   wd 'set autosave ',>2{y
   wd 'cc eventlog checkbox;cn "Log"'
   wd 'set eventlog ',":0<DBG_dbj_
+  wd 'cc toggleide checkbox;cn "Ide"'
+  wd 'set toggleide 0'
   wd 'bin sz'
   wd 'bin h'
   wd 'cc toolgo toolbar 22x22'
@@ -2054,6 +2069,10 @@ wd 'cc ub editm readonly'
 wd 'set ub font ',DBH
 wd 'set ub stylesheet *color:#000000;background-color:#ccffcc'
 wd 'set ub text *'
+wd 'tabnew isigrid'
+wd 'cc isigridinfo static center'
+wd 'set isigridinfo text isigrid is not yet fully implemented',LF,'grid is shown in a separate window' NB. remove
+NB. wd 'cc ig isigrid'
 wd 'splitend'
 wd 'tabend'
 if. 1=TBO do.
@@ -2072,7 +2091,7 @@ if. fexist jpath '~temp/tbk.tmp' do.
 end.
 TBT=: '' NB. trace content of edit box
 TBX=: 0  NB. trace changes in grid
-TBY=: 1 0 0 0 0  NB. trace valid tabs
+TBY=: 1 0 0 0 0 0 NB. trace valid tabs
 TBZ=: wd 'qd'
 TBZ=: ('tb_select';'0 0 0 0') lookset ('tb';'0 0') lookset TBZ NB. jqt bug workaround
 if. 2=TBO do. objectcheck'' end.
@@ -2195,7 +2214,7 @@ case. ,'0' do. NB. Grid
   if. -.0{TBY do.
     tbk_build''
     TBX=: 0
-    TBY=: TBY +. 1 0 0 0 0
+    TBY=: TBY +. 1 0 0 0 0 0
   else.
     wd 'set tb resizecol'
   end.
@@ -2203,25 +2222,46 @@ case. ,'1' do. NB. Text
   if. -.1{TBY do.
     TBT=: }:^:(LF={:) DBS printk TBK
     wd 'set xb text *',TBT
-    TBY=: TBY +. 0 1 0 0 0
+    TBY=: TBY +. 0 1 0 0 0 0
   end.
 case. ,'2' do. NB. ASCII
   if. -.2{TBY do.
     wd 'set pb text *',tostring 0&k :: ] TBK
-    TBY=: TBY +. 0 0 1 0 0
+    TBY=: TBY +. 0 0 1 0 0 0
   end.
 case. ,'3' do. NB. HTML
   if. -.3{TBY do.
     res=. (('<h1>dbj html output</h1>';'')sr MYHTML),(dbjtohtml TBK),LF,'</body>',LF,'</html>',LF
     wd 'set hb ',(>(UNAME-:'Android'){'html';'text'),' *',res
-    TBY=: TBY +. 0 0 0 1 0
+    TBY=: TBY +. 0 0 0 1 0 0
   end.
 case. ,'4' do. NB. HREF
   if. -.4{TBY do.
     res=. (('<h1>dbj href output</h1>';'')sr MYHREF),(dbjtohref 0&k :: ] TBK),LF,'</body>',LF,'</html>',LF
     wd 'set wb ',(>(UNAME-:'Android'){'html';'text'),' *',res
     wd 'set ub text *',res
-    TBY=: TBY +. 0 0 0 0 1
+    TBY=: TBY +. 0 0 0 0 1 0
+  end.
+case. ,'5' do. NB. isigrid
+  if. -.5{TBY do.
+    res=. frmt each bfk 0&k :: ] TBK
+    hdr=. 1{.res
+    res=. 1}.res
+    'n m'=. $res
+    wd 'pc isiviewer closeok' NB. remove
+    wd 'pn isigrid ',19{. isotimestamp now'' NB. remove
+    if. 0<n*m do.
+      wd 'cc ig isigrid' NB. remove
+      wd 'set ig shape ',":n,m
+      wd 'set ig align ',":(+:-.((typek hdr) e.<'string')+(typek hdr) e.<'boxed')
+      wd 'set ig hdr ',;(DEL&,)@:(,&DEL)each namesk hdr
+      wd 'set ig lab ',":i.n  
+      wd 'set ig data ',;(DEL&,)@:(,&DEL)each res
+    end.
+    wd 'pmove ',":(50+2{.".fread jpath '~temp/tbk.tmp'),640 480 NB. remove
+    wd 'pshow' NB. remove
+    wd 'psel tbk'  NB. remove
+    TBY=: TBY +. 0 0 0 0 0 1
   end.
 end.
 event_stop't1'
@@ -2811,7 +2851,7 @@ event_start'openfile';sel=. 'fileedit' lookup TBZ
 if. fexist sel do.
   try.
     wd 'set pb text *',freads sel
-    TBY=: TBY *. 1 1 0 1 1
+    TBY=: TBY *. 1 1 0 1 1 1
   catch.
     wdinfo'dbj error in tbk_openfile_button';13!:12''
   end.
@@ -2828,7 +2868,7 @@ TBZ=: wd 'qd'
 event_start'openurl';sel=. 'urledit' lookup TBZ
 try.
   wd 'set hb url ',sel
-  TBY=: TBY *. 1 1 1 0 1
+  TBY=: TBY *. 1 1 1 0 1 1
 catch.
   wdinfo'dbj error in tbk_openurl_button';13!:12''
 end.
@@ -2870,25 +2910,25 @@ case. ,'0' do. NB. Grid
   wd 'set xb text *'
   TBT=: ''
   TBX=: 0
-  TBY=: 1 0 0 0 0
+  TBY=: 1 0 0 0 0 0
 case. ,'1' do. NB. Text
   TBT=: }:^:(LF={:) DBS printk TBK
   wd 'set xb text *',TBT
   TBX=: 0
-  TBY=: 0 1 0 0 0
+  TBY=: 0 1 0 0 0 0
 case. ,'2' do. NB. ASCII
   wd 'set pb text *',tostring 0&k :: ] TBK
   wd 'set xb text *'
   TBT=: ''
   TBX=: 0
-  TBY=: 0 0 1 0 0
+  TBY=: 0 0 1 0 0 0
 case. ,'3' do. NB. HTML
   res=. (('<h1>dbj html output</h1>';'')sr MYHTML),(dbjtohtml TBK),LF,'</body>',LF,'</html>',LF
   wd 'set hb ',(>(UNAME-:'Android'){'html';'text'),' *',res
   wd 'set xb text *'
   TBT=: ''
   TBX=: 0
-  TBY=: 0 0 0 1 0
+  TBY=: 0 0 0 1 0 0
 case. ,'4' do. NB. HREF
   res=. (('<h1>dbj href output</h1>';'')sr MYHREF),(dbjtohref 0&k :: ] TBK),LF,'</body>',LF,'</html>',LF
   wd 'set wb ',(>(UNAME-:'Android'){'html';'text'),' *',res
@@ -2896,7 +2936,29 @@ case. ,'4' do. NB. HREF
   wd 'set xb text *'
   TBT=: ''
   TBX=: 0
-  TBY=: 0 0 0 0 1
+  TBY=: 0 0 0 0 1 0
+case. ,'5' do. NB. isigrid
+  res=. frmt each bfk 0&k :: ] TBK
+  hdr=. 1{.res
+  res=. 1}.res
+  'n m'=. $res
+  wd 'pc isiviewer closeok' NB. remove
+  wd 'pn isigrid ',19{. isotimestamp now'' NB. remove
+  if. 0<n*m do.
+    wd 'cc ig isigrid' NB. remove
+    wd 'set ig shape ',":n,m
+    wd 'set ig align ',":(+:-.((typek hdr) e.<'string')+(typek hdr) e.<'boxed')
+    wd 'set ig hdr ',;(DEL&,)@:(,&DEL)each namesk hdr
+    wd 'set ig lab ',":i.n  
+    wd 'set ig data ',;(DEL&,)@:(,&DEL)each res
+  end.
+  wd 'pmove ',":(50+2{.".fread jpath '~temp/tbk.tmp'),640 480 NB. remove
+  wd 'pshow' NB. remove
+  wd 'psel tbk'  NB. remove
+  wd 'set xb text *'
+  TBT=: ''
+  TBX=: 0
+  TBY=: 0 0 0 0 0 1
 end.
 )
 
@@ -2910,12 +2972,12 @@ end.
 if. TBX do.
   TBK=: tbk_revert''
   TBX=: 0
-  TBY=: 0 0 0 0 0
+  TBY=: 0 0 0 0 0 0
 elseif. -.TBT-:xb do.
   TBN=: '*'
   TBK=: DBS ktable xb
   TBT=: xb
-  TBY=: 0 0 0 0 0
+  TBY=: 0 0 0 0 0 0
 end.
 )
 
