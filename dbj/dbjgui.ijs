@@ -98,7 +98,7 @@ NB.+javascript ev_object_event() --> javascript jdoayax() -->
 NB.+j ev_object_event --> j jhrajax --> javascript
 NB.+ev_object_event_ajax(ts)
 jev_get=: 3 : 0          
-dat=. _9}.5}.gethv'GET' NB. es: _9}.5}.'/dbj?db1 HTTP/1.1'
+dat=. _9}.5}.gethv_jhs_'GET' NB. es: _9}.5}.'/dbj?db1 HTTP/1.1'
 dbj<dat
 )
 
@@ -126,9 +126,9 @@ jhma''
 'linkmenu'jhmg'link';1;14
 'dbresetmenu'jhmab'reset database'
 '/~user/dbj/" " target="_blank'jhml'dbj directory'
->(2|DBE_dbj_){('/~user/projects/dbj/help/dbjwiki.htm" target="_blank'jhml'dbj help page');('/~addons/data/dbj/help/dbjwiki.htm" target="_blank'jhml'dbj help page')
+>(2|DBE_dbj_){('/~user/projects/dbj/examples/dbjwiki.htm" target="_blank'jhml'dbj help page');('/~addons/data/dbj/examples/dbjwiki.htm" target="_blank'jhml'dbj help page')
 '/~temp/plot.html" target="_blank'jhml'dbj plot output'
-'/~temp/viewmat.bmp" target="_blank'jhml'dbj bmp output'
+'/~home/" target="_blank'jhml'home directory'
 'jfile" target="_blank'jhml'jfile'
 'jijx" target="_blank'jhml'jijx'
 'dbexitmenu'jhmab'exit'
@@ -719,7 +719,7 @@ case. 'Show as text table' do.
 case. 'Show as html table' do.
   dbjtohref 0&k DBI
 case. 'Show as formatted text' do.
-  '<pre>',(htmlreplace tostring DBI),'</pre>'
+  '<pre>',(htmlreplace tostring 0&k DBI),'</pre>'
 case. 'Edit as text area' do.
   res=. cell DBS kself DBI
   'txt'jhtextarea res;40;120
@@ -818,11 +818,11 @@ try.
     t=. 'text/plain'
   elseif. DIRS*.'/'-:{:y do.
     if. 1<#'/'ss y do.
-      t=. '<a href="../">Parent Directory</a>' kdefine_dbj_ 'name';'datetime';'size:i'
+      t=. '<a href="../">Parent Directory</a>' kdefine_dbj_ 'name';'datetime';'size:i';'preview'
     else.
-      t=. kdefine_dbj_ 'name';'datetime';'size:i'
+      t=. kdefine_dbj_ 'name';'datetime';'size:i';'preview'
     end.
-    d=. ('Directory Content of ',y)myhref_dbj_ (dbjtohref_dbj_ t kud_dbj_ ('name';'datetime';'size') kfield_dbj_ 'name=. (''\'';''/'') sr"1 ''<a href="'' icat N icat ''">'' icat N icat ''</a>''' kaddcol_dbj_ kfolder_dbj_ y),'<p><i>',(19{. isotimestamp 6!:0''),'</i><br />dbj ',VERSION_dbj_,'</p>'
+    d=. ('Directory Content of ',y)myhref_dbj_ '<table><tr><td valign="top" style="border:0;background:#040;">',(dbjtohref_dbj_ t kud_dbj_ ('name';'datetime';'size';'preview') kfield_dbj_ ('name=. (''\'';''/'') sr"1 ''<a href="'' icat N icat ''">'' icat N icat ''</a>''';'preview=. ''dir''';'preview=. (''/''~:{:@:dtb"1 (''\'';''/'') sr"1 N) isel preview,:(''\'';''/'') sr"1 ''<a href="'' icat N icat ''" target="preview">test</a>''') kaddcol_dbj_ kfolder_dbj_ y),'</td><td align="center" valign="top" style="border:0;background:#040;"><iframe name="preview" style="background:#fff;" width="900" height="600"></iframe></td></tr></table><p><i>',(19{. isotimestamp 6!:0''),'</i><br />dbj ',VERSION_dbj_,'</p>'
     t=. 'text/html'
   elseif. HDBJ do.
     if. -.'.'e.y do.
@@ -1462,7 +1462,7 @@ NB.=====================================================================
 NB.*tbk_dbjhelp_button v show in default browser the dbj wiki page
 tbk_dbjhelp_button=: 3 : 0
 event_start,<'dbjhelp'
-browse_j_ file2url DBV,'/help/dbjwiki.htm'
+browse_j_ file2url DBV,'/examples/dbjwiki.htm'
 event_stop'dbjhelp'
 )
 
@@ -1692,7 +1692,7 @@ if. #y do.
         wd 'set ',cmd,' ',par
       case. 'exportxls';'openxls';'savexls';'textfont';'gridfont';'gridbackcolor';'gridtextcolor' do.
         arg=. par
-      case. 'insertrec';'appendcopy';'deleterec';'removefield';'azsort';'zasort' do.
+      case. 'insertrec';'appendcopy';'deleterec';'azsort';'zasort' do.
         'TBR TBC'=: 0".par
       case. 'findnextcell';'findprevcell' do.
         'TBR TBC'=: 0".par
@@ -1844,7 +1844,6 @@ elseif. 2=TBO do.
   wd 'menu insertrec "&Insert Record" "Ctrl+Shift+I"'
   wd 'menu appendcopy "&Copy-Append Record" "Ctrl+Shift+C"'
   wd 'menu deleterec "&Delete Record" "Ctrl+Shift+D"'
-  wd 'menu removefield "Remove Field" ""'
   wd 'menusep'
   wd 'menu azsort "&AZ Sort" "Ctrl+Shift+A"'
   wd 'menu zasort "&ZA Sort" "Ctrl+Shift+Z"'
@@ -1990,7 +1989,6 @@ wd 'set toolgrid addsep'
 wd 'set toolgrid add insertrec "Insert Record" "',DBV,'/images/edit-table-insert-row-above.png"'
 wd 'set toolgrid add appendcopy "Copy-Append Record" "',DBV,'/images/edit-table-insert-row-under.png"'
 wd 'set toolgrid add deleterec "Delete Record" "',DBV,'/images/edit-table-delete-row.png"'
-wd 'set toolgrid add removefield "Remove Field" "',DBV,'/images/edit-table-delete-column.png"'
 wd 'set toolgrid addsep'
 wd 'set toolgrid add azsort "AZ Sort" "',DBV,'/images/view-sort-ascending.png"'
 wd 'set toolgrid add zasort "ZA Sort" "',DBV,'/images/view-sort-descending.png"'
@@ -2192,7 +2190,8 @@ if. L.y do. NB. boxed argument when shape changes
   wd 'set tb foreground #',TBG
 end.
 wd 'set tb data ',;(DEL&,)@:(,&DEL)each TBB
-wd 'set tb resizecol'
+wd 'set tb colwidth ',":colsize colwidth TBK
+wd 'set tb resizerow'
 if. 0<n*m do. tbk_tb_mark >y end.
 )
 
@@ -2216,7 +2215,8 @@ case. ,'0' do. NB. Grid
     TBX=: 0
     TBY=: TBY +. 1 0 0 0 0 0
   else.
-    wd 'set tb resizecol'
+    wd 'set tb colwidth ',":colsize colwidth TBK
+    wd 'set tb resizerow'
   end.
 case. ,'1' do. NB. Text
   if. -.1{TBY do.
@@ -2332,6 +2332,7 @@ else. NB. linked fields
     wd 'set tb block'
   end.
 end.
+wd 'set tb colwidth ',":colsize colwidth TBK
 if. 2=TBO do.
   if. 0<DBG_dbj_ do. NB. LOG enabled
     if. 1=DBG_dbj_ do.
@@ -2397,21 +2398,6 @@ event_stop'deleterec'
 )
 
 NB.=====================================================================
-NB.*tbk_removefield_button v handle click of removefield button
-tbk_removefield_button=: 3 : 0
-TBZ=: wd 'qd'
-event_start'removefield';":TBR,TBC
-sel=. (i.{:$TBB)-.TBC
-TBH=: sel{TBH
-TBL=: sel{TBL
-TBI=: sel{TBI
-TBB=: sel{"1 TBB
-tbk_fill <TBR,TBC<.<:{:$TBB
-tablegrid''
-event_stop'removefield'
-)
-
-NB.=====================================================================
 NB.*tbk_azsort_button v handle click of azsort button
 tbk_azsort_button=: 3 : 0
 TBZ=: wd 'qd'
@@ -2474,7 +2460,6 @@ siz=. ": <. 1.2 * 0 ". (] }.~ [: >: ' ' i:~ ]) DBY
 DBY=: fnt,' ',siz
 wd 'set tb block'
 wd 'set tb font ',DBY
-wd 'set tb resizecol'
 wd 'set tb resizerow'
 event_stop'zoomin'
 )
@@ -2488,7 +2473,6 @@ siz=. ": 5 >. <. 1.2 %~ 0 ". (] }.~ [: >: ' ' i:~ ]) DBY
 DBY=: fnt,' ',siz
 wd 'set tb block'
 wd 'set tb font ',DBY
-wd 'set tb resizecol'
 wd 'set tb resizerow'
 event_stop'zoomout'
 )
@@ -2506,7 +2490,6 @@ if. 0<#mb do.
   DBY=: mb
   wd 'set tb block'
   wd 'set tb font ',DBY
-  wd 'set tb resizecol'
   wd 'set tb resizerow'
 end.
 event_stop'gridfont'

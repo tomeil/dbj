@@ -245,10 +245,12 @@ If key values are not unique, the last one is the good one.
 
 NB. =========================================================
 Lab Section
-The kfind verb allows to select records from a dbj text file which holds a table,
+While krow selects records from a dynaset,
+kfind selects records from a dbj text file which holds a table,
 without reading the whole file, but just mapping it in memory (see jmf).
 
-The ksearch verb instead performs a full text search of a string on a mapped file.
+Likewise, klocate search values in a dynaset, while ksearch 
+performs a full text search of a string on a mapped file.
 
 The following two examples are equivalent to:
 
@@ -264,7 +266,7 @@ NB. =========================================================
 Lab Section
 A dbj dynaset is always a 2-rows boxed table with a 1-row head and a
 1-row body. The body is an inverted table, as described in the J wiki
-at the page http://www.jsoftware.com/jwiki/Essays/Inverted_Table
+at the page http://code.jsoftware.com/wiki/Essays/Inverted_Table
 
 The testk verb checks if its argument is a valid dbj dynaset, returning
 the number of records and fields; otherwise, an error is returned.
@@ -428,16 +430,31 @@ k__DB 'table3'
 
 NB. =========================================================
 Lab Section
-The iconv verb, which has a more complicated syntax, is useful in
+The iconv verb is useful in
 conjunction with kaddcol, in order to convert a single field; iconv
 does not use the information of the dynaset's head.
 
-Note also the ka adverb, which transforms a name applying to it the
-k verb (this can be useful just to save some parenthesis).
+Note also the use of ka adverb, which transforms a name
+applying to it the k verb.
 )
 
 ('query2'ka__DB;'ValueID') iconv__DB 'LinkedValue' ifield__DB k__DB 'table3'
 ('query2'ka__DB;'ValueID') iconv__DB 1 2 4 3
+
+NB. =========================================================
+Lab Section
+The following example shows the use of parametric queries:
+if the left argument of the k verb is an array of symbols,
+these symbols (converted to strings) are used to replace
+parameters inside the query or the table provided as
+right argument; up to 10 parameters are allowed, using the
+backtick character followed by a digit:
+
+`0 `1 `2 `2 `4 `5 `6 `7 `8 `9 
+)
+
+'kint `1+i.`0' ksave__DB 'query0'
+(s:'5';'10') k__DB 'query0' 
 
 NB. =========================================================
 Lab Section

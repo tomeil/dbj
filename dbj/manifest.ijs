@@ -23,7 +23,7 @@ Refer to script comments and help page, or run the dbj lab for more information.
 
 LABCATEGORY=: 'Data'
 
-VERSION=: '4.3.3'
+VERSION=: '4.4.1'
 
 RELEASE=: 'j804'
 
@@ -38,7 +38,8 @@ manifest.ijs
 examples/dbjhs.conf
 examples/dbj.cmd
 examples/dbj.desktop
-help/dbjwiki.htm
+examples/dbjwiki.htm
+examples/startup.ijs
 images/application-exit
 images/applications-excel
 images/applications-internet
@@ -61,7 +62,6 @@ images/edit-find.png
 images/edit-find-replace.png
 images/edit-paste.png
 images/edit-rename.png
-images/edit-table-delete-column.png
 images/edit-table-delete-row.png
 images/edit-table-insert-row-above.png
 images/edit-table-insert-row-under.png

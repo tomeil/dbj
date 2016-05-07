@@ -74,3 +74,9 @@ data/dbj - change history
 
 == 4.3.3 ==
  * PHP header output - kreset enhanced - isigrid test - fixed external browsing with file2url - addded toggleide
+
+== 4.4.0 ==
+ * jandroid compatibility - colwidth management in GUI - help file moved to examples
+
+== 4.4.1 ==
+ * fixed jhs GUI; added parametric query

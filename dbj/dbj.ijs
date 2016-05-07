@@ -282,6 +282,15 @@ NB. dbj utilities
 NB.=====================================================================
 
 NB.=====================================================================
+NB.*colwidth v size (number of characters) of each field of a dynaset
+colwidth=: 13 : '([: <:@:}: 1&|. - ]) I.''+''E.{.": y'
+
+NB.=====================================================================
+NB.*colsize v size (number of pixels) to be assigned to each field on
+NB.+screen, for best representation of data; y is colwidth
+colsize=: 13 : '>(1280 > +/ 12*y){((12*y)<.90>.<.1280*(] % +/)y);12*y'
+
+NB.=====================================================================
 NB.*tobase64 v convert a string to base64 representation
 tobase64=: 3 : 0
 res=. ((a.{~ ,(a.i.'Aa') +/i.26),'0123456789+/') {~ #. _6 [\ , (8#2) #: a. i. y
@@ -498,11 +507,11 @@ sr=: 4 : 0
 j=. p noss y
 if. ''-:j do. y return. end.
 d=. p-&#q
-k=. (j+(0>.-d)*i.#j)+/i.#q
+l=. (j+(0>.-d)*i.#j)+/i.#q
 select. *d
-  case.  1 do. (0 (j+/(#q)+i.d)}1$~#y) # q k}y
-  case.  0 do. q k}y
-  case. _1 do. q k} (0 (d{."1 k)}1$~(#y)+(#j)*|d) #^:_1 y
+  case.  1 do. (0 (j+/(#q)+i.d)}1$~#y) # q l}y
+  case.  0 do. q l}y
+  case. _1 do. q l} (0 (d{."1 l)}1$~(#y)+(#j)*|d) #^:_1 y
 end.
 )
 
@@ -597,6 +606,10 @@ unixtojtime=: 1 tsrep 5364662400000+1000*]
 NB.=====================================================================
 NB.*jtounixtime v convert J timestamp (Y M A h m s) to unixtime (seconds from 1/1/1970) 
 jtounixtime=: 5364662400 -~ [: <. 1000 %~ tsrep
+
+NB.=====================================================================
+NB.*crono v convert number of seconds to string HH:MM:SS 
+crono=: 3 : '(((": <. y%86400),''d '')&,)^:(y>86399) 8&{. 11&}. isotimestamp 1&tsrep 1000&* 86400|y'
 
 NB.=====================================================================
 NB.*dft v discrete fourier transform
@@ -957,10 +970,18 @@ if. IFQT*.(1=L.y) do.
     assert. 'a jqt GUI istance already active'
   end.
 end.
-if. IFJHS*.(1=L.y) do.
-  if. 'jijx'-:4{.URL_jhs_ do.
-    jhtml'<input type="button" value="click here to open ''',(>y),'''" onclick="window.open(''dbj?',(>y),''');">'
-    return.
+if. IFJHS do.
+  if. (2=DBE_dbj_)+.(3=DBE_dbj_) do. NB. dbj already loaded in console or android, and then switched to jhs
+    coinsert 'jhs'
+    try. require 'ide/jhs/jfilesrc convert/json' catch. assert. 'required addons: ide/jhs, convert/json' end.
+    plotdef 'show';'dbjplot';800 600
+    DBE_dbj_=: 2+DBE_dbj_
+  end.
+  if. 1=L.y do.
+    if. 'jijx'-:4{.URL_jhs_ do.
+      jhtml'<input type="button" value="click here to open ''',(>y),'''" onclick="window.open(''dbj?',(>y),''');">'
+      return.
+    end.
   end.
 end.
 db=. conew 'dbj'
@@ -983,6 +1004,9 @@ create=: 3 : 0
 DBS create y
 :
 DBB=: coname''
+9!:1<.100x1**:{:6!:0''   NB. set new RNG seed
+9!:7 '+++++++++|-'
+9!:11 ] 10               NB. better print precision
 if. a:-:y do. y=. <'db1' elseif. ''-:y do. y=. 'db1' end.
 if. (0=#dir jpath '~user/dbj/',>y)*._2<4!:0 boxopen y do.  NB. local database does not exist and has a valid j name
   try.
@@ -1058,6 +1082,7 @@ NB.+_ ==> '' ktrans k y
 NB.+__ ==> 'bifc' kunbox k y
 NB.+a: (empty box) ==> 0 tbk k y
 NB.+<a: (boxed empty box) ==> 1 tbk k y
+NB.+symbols ==> parametric query: `0, `1, ... , `9 are replaced in y with symbols passed in x
 k=: 3 : 0
 assert. DBB=coname''
 try.
@@ -1107,7 +1132,7 @@ try.
           (<(((<(sel i.<,y),2) { DBD),((1{$dat);(#>0{_1{dat); 7!:5 <'dat'),<lsq,.siz)) keywritex DBM;,y NB. size of file, number of fields, number of records, memory occupation and required files (with sizes) are stored as extra data
         end.
         dat                                     NB. object is returned
-        end.
+      end.
     else.                                       NB. a command is provided
       testk y=. ". y                            NB. try to execute the command
       y
@@ -1211,10 +1236,27 @@ elseif. (4>:3!:0 x) *. 1-:#$ x do.
   x kyescol k y
 elseif. (4>:3!:0 x) *. 2-:#$ x do.
   (,x) kyesrow k y
+elseif. (65536=3!:0 x) *. (2>#$y) *. 2=3!:0 y do. NB. parametric query
+  assert. DBB=coname''
+  try.
+    sel=. 0{"1 DBD
+    if. ((<,y) e. sel) *. ((;:y)-:,<,y) *. _2<4!:0<,y do.
+      dat=. x krd y
+      testk dat
+      dat
+    else.
+      testk y=. ". ((,.'`'&,@:": each i.10) ,. 10{.s:^:_1 x) srr y
+      y
+    end.
+  catch.
+    assert. 'Error executing query'
+  end.
 elseif. do.
   k y
 end.
 )
+
+
 
 NB.=====================================================================
 NB.*ka a adverb to get an object of active database
@@ -1239,8 +1281,11 @@ NB.*krd v read a text file returning a dbj dynaset, eventually executing a dbj q
 NB.+right argument must be the name of the object to read;
 NB.+if the corresponding file contains a table, it is loaded;
 NB.+if the sorresponding file contains a query, it is evaluated;
+NB.+dyadic version is used only for parametric query (see k verb);
 NB.+working also with encrypted files
 krd=: 3 : 0
+''krd y
+:
 assert. DBB=coname''
 sel=. 0{"1 DBD                             NB. boxed list of the objects in the database
 dbfile=. DBF,'/',y                         NB. pathname of the file
@@ -1248,6 +1293,9 @@ if. ((<(sel i. <,y),1) { DBD) e. '(t)';'(q)' do. NB. encrypted file
   y=. decrypt frombase64 4 }. fread dbfile NB. reads and decrypts file y
 else.                                      NB. plain text file
   y=. freads dbfile                        NB. reads file (as text, converting CRLF to LF) in a single string
+end.
+if. -.''-:x do.                            NB. parametric query
+  y=. ((,.'`'&,@:": each i.10) ,. 10{.s:^:_1 x) srr y
 end.
 if. ']' -: 0 { y do.                       NB. this is a query, because starts with ']'
   y=. 'kquery=. 3 : 0',LF,(1 }. ,&LF^:(LF~:{:) y),')' NB. dynamic definition of kquery verb
