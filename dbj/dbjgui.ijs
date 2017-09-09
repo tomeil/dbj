@@ -735,14 +735,14 @@ NB.=====================================================================
 NB.=====================================================================
 NB.*input_jhs_ v originally defined in jhs/core.ijs
 input_jhs_=: 3 : 0
-logjhs 'prompt'
+logapp 'jhs input prompt: ',":#y
 logapp 'jhs input prompt: ',":#y
 try.
 if. _1~:SKSERVER do. try. ".'urlresponse_',URL,'_ y' catch. end. end. NB. jijx
 if. _1~:SKSERVER do. jbad'' end.
 getdata'' NB. get and parse http request
 if. 1=NVDEBUG do. smoutput seebox NV end. NB. HNV,NV
-if. (-.(<URL)e.boxopen OKURL)*.(0~:#PASS)*.(1~:+/cookie E. gethv'Cookie:')*.-.LHOK*.PEER-:LOCALHOST
+if. -. ((<URL)e.boxopen OKURL)+.(cookie-:gethv'Cookie:')+.PEER-:LOCALHOST
                        do. r=. 'jev_get_jlogin_ 0'
 elseif. 1=RAW          do. r=. 'jev_post_raw_',URL,'_'''''
 NB. start my code for .php scripts with post data
@@ -763,10 +763,10 @@ elseif. '/'-:{:URL     do. r=. 'jev_get_jfilesrc_ URL_jhs_'
 NB. end my code
 elseif. 1              do. r=. 'jev_get_',URL,'_'''''
 end.
-logjhs'sentence'
 logapp 'jhs sentence: ',r
 if. JZWSPU8-:3{.r do. r=. 3}.r end. NB. empty prompt kludge
 r NB. J sentence to run
+
 catch.
  logappx 'input error'
  exit'' NB. 2!:55[11 crashes
@@ -796,7 +796,9 @@ htmlresponse y,~gsrcheadphp rplc '<HEADER>';x;'<LENGTH>';":#y
 NB.=====================================================================
 NB.*jev_get_jfilesrc_ v originally defined in jhs/jfilesrc.ijs
 jev_get_jfilesrc_=: 3 : 0
+if. 0=nc<'gets_jhs_' do. gets_jhs_=: gets_jhs_,y,LF end.
 if. y-:'favicon.ico' do. favicon 0 return. end.
+if. (-.IFWIN)*.'usr/share/'-:10{.y do. y=. '/',y end. NB. gnuplot kludge
 y=. jpath(5*'~root/'-:6{.y)}.y
 try.
   if. (0<#PHPCGI)*.'.php'-:_4{.y do.
@@ -1959,7 +1961,7 @@ elseif. 2=TBO do.
   wd 'cc listquery checkbox;cn "Q"'
   wd 'set listquery ',>5{y
   wd 'cc kverblist combolist;set kverblist wh 100 22'
-  wd 'set kverblist items ', ; ,&' ' each 'kaddcol';'kaddkey';'kaddrow';'karray';'kascii';'kazsort';'kbmp';'kboxcol';'kboxed';'kcat';'kcln';'kclncol';'kclnrow';'kcol';'kcomplex';'kconf';'kcontent';'kday';'kdbj';'kdefine';'kdelcol';'kdelrow';'kdir';'kdirpath';'kdirtree';'kdu';'ke';'kfield';'kfile';'kfilter';'kfind';'kfirst';'kfloat';'kfolder';'kget';'kgetxls';'kgrid';'kgroup';'khead';'khref';'khtml';'khttp';'kimg';'kinfo';'kini';'kint';'kj';'kjbox';'kjdoc';'kjoin';'kl';'klast';'klocate';'klr';'kmerge';'kmix';'kmixall';'kmixkey';'kn';'knotcol';'knotrow';'kplot';'krd';'krename';'krgb';'krnd';'krow';'ks';'ksearch';'kself';'kselrow';'kstring';'ksurface';'ktable';'ktoboxed';'ktocomplex';'ktofloat';'ktoint';'ktorstring';'ktostring';'ktrans';'kud';'kunbox';'kview';'kviewmat';'kwget';'kwww';'kyescol';'kyesrow';'kzasort'
+  wd 'set kverblist items ', ; ,&' ' each 'kaddcol';'kaddkey';'kaddrow';'karray';'kascii';'kazsort';'kbmp';'kboxcol';'kboxed';'kcat';'kcln';'kclncol';'kclnrow';'kcol';'kcomplex';'kconf';'kcontent';'kday';'kdbj';'kdefine';'kdelcol';'kdelrow';'kdir';'kdirpath';'kdirtree';'kdu';'ke';'kfield';'kfile';'kfilter';'kfind';'kfirst';'kfloat';'kfolder';'kget';'kgetxls';'kgrid';'kgroup';'khead';'khref';'khtml';'khttp';'kimg';'kinfo';'kini';'kint';'kj';'kjbox';'kjdoc';'kl';'klast';'klocate';'klr';'kmerge';'kmix';'kmixall';'kmixkey';'kn';'knotcol';'knotrow';'kplot';'krd';'krename';'krgb';'krnd';'krow';'ks';'ksearch';'kself';'kselrow';'kstring';'ksurface';'ktable';'ktoboxed';'ktocomplex';'ktofloat';'ktoint';'ktorstring';'ktostring';'ktrans';'kud';'kunbox';'kview';'kviewmat';'kwget';'kwww';'kyescol';'kyesrow';'kzasort'
   wd 'set kverblist select 0'
   wd 'bin szs'
   wd 'splitsep'

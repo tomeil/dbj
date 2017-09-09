@@ -23,9 +23,9 @@ Refer to script comments and help page, or run the dbj lab for more information.
 
 LABCATEGORY=: 'Data'
 
-VERSION=: '4.4.1'
+VERSION=: '4.4.4'
 
-RELEASE=: 'j804'
+RELEASE=: 'j806'
 
 PLATFORMS=: 'win linux android'
 

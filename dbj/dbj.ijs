@@ -91,7 +91,6 @@ NB.+ins kfilter   dyn    - filter records of a dbj dynaset with a given conditio
 NB.+str klocate   dyn    - locate records of a dbj dynaset containing a given string or value
 NB.+sel kazsort   dyn    - sort (ascending) records of a dbj dynaset
 NB.+sel kzasort   dyn    - sort (descending) records of a dbj dynaset
-NB.+(dy2;'f2')  kjoin  (dy1;'f1') - join two fields of different dynasetss (output of three relevant columns)
 NB.+('op';'f2') kgroup (dy1;'f1') - group content of some field(s) and perform operation on other field(s)
 NB.+sel krnd      dyn    - return random records from a dbj dynaset
 NB.+sel ktrans    dyn    - transpose a dbj dynaset
@@ -283,12 +282,12 @@ NB.=====================================================================
 
 NB.=====================================================================
 NB.*colwidth v size (number of characters) of each field of a dynaset
-colwidth=: 13 : '([: <:@:}: 1&|. - ]) I.''+''E.{.": y'
+colwidth=: 3 : '([: <:@:}: 1&|. - ]) I.''+''E.{.": y'
 
 NB.=====================================================================
 NB.*colsize v size (number of pixels) to be assigned to each field on
 NB.+screen, for best representation of data; y is colwidth
-colsize=: 13 : '>(1280 > +/ 12*y){((12*y)<.90>.<.1280*(] % +/)y);12*y'
+colsize=: 3 : '>(1280 > +/ 12*y){((12*y)<.90>.<.1280*(] % +/)y);12*y'
 
 NB.=====================================================================
 NB.*tobase64 v convert a string to base64 representation
@@ -306,7 +305,7 @@ pad }. a. {~ #. _8 [\ , (6#2) #: ((a.{~ ,(a.i.'Aa') +/i.26),'0123456789+/') i. y
 
 NB.=====================================================================
 NB.*bfi v transform a table in boxed from inverted format
-bfi=: dtb&.>@:|:@:(<"_1&>)f.
+bfi=: dtb&.>@:|:@:(<"_1&>)
 
 NB.=====================================================================
 NB.*ifb v transform a table in inverted from boxed format
@@ -314,11 +313,11 @@ ifb=: <@(,@>"1)@|:
 
 NB.=====================================================================
 NB.*bfk v transform a table in boxed from dbj format
-bfk=: (1&{. , bfi@:(_1&{))f. :. kfb
+bfk=: (1&{. , bfi@:(_1&{)) :. kfb
 
 NB.=====================================================================
 NB.*kfb v transform a table in dbj from boxed format
-kfb=: (1&{. , ifb@:(1&}.))f. :. bfk
+kfb=: (1&{. , ifb@:(1&}.)) :. bfk
 
 NB.=====================================================================
 NB.*ind v indexof dyad operating on rows of an inverted table
@@ -364,15 +363,15 @@ tobool=: 0&~:@:tofloat
 
 NB.=====================================================================
 NB.*isint v check if a string represents an integer value
-isint=: (dltb -: ":@:toint)f.
+isint=: (dltb -: ":@:toint)
 
 NB.=====================================================================
 NB.*isfloat v check if a string represents a float value
-isfloat=: (dltb -: ":@:tofloat)f.
+isfloat=: (dltb -: ":@:tofloat)
 
 NB.=====================================================================
 NB.*iscomplex v check if a string represents a complex value
-iscomplex=: (dltb -: ":@:tocomplex)f.
+iscomplex=: (dltb -: ":@:tocomplex)
 
 NB.=====================================================================
 NB.*frmt v try to unbox, then format as string with - sign for negative numbers
@@ -384,63 +383,63 @@ ifrmt=: frmt"1^:(2 ~: 3!:0)&.>
 
 NB.=====================================================================
 NB.*prefix v prepend a string to each element of a boxed list
-prefix=: 13 : '(<x) , each ": each y'
+prefix=: 4 : '(<x) , each ": each y'
 
 NB.=====================================================================
 NB.*suffix v append a string to each element of a boxed list
-suffix=: 13 : '(<x) ,~ each ": each y'
+suffix=: 4 : '(<x) ,~ each ": each y'
 
 NB.=====================================================================
 NB.*bcat v concatenate strings inside two boxed lists, or a string inside a boxed list
-bcat=: 13 : '(": each boxopen x) , each ": each boxopen y'f.
+bcat=: 4 : '(": each boxopen x) , each ": each boxopen y'
 
 NB.=====================================================================
 NB.*bcatstr v concatenate all elements of a boxed list using a separator between strings
-bcatstr=: (13 : 'bcat/ y'f.) : (13 : '(-#x) }. each bcat/ x suffix y'f.)
+bcatstr=: (3 : 'bcat/ y') : (4 : '(-#x) }. each bcat/ x suffix y')
 
 NB.=====================================================================
 NB.*icat v concatenate as string the content of two fields of a dbj dynaset
 NB.+operands can be also single strings instead of rank 2 arrays
-icat=: 13 : 'dtb(dtb^:(1<#)":x),":y'"1 f.
+icat=: 4 : 'dtb(dtb^:(1<#)":x),":y'"1
 
 NB.=====================================================================
 NB.*icatstr v concatenate all elements of a field using a separator between strings
-icatstr=: (13 : 'icat/ dtb@:":"1 y'f.) : (13 : '(#":x) }. icat/ (":x) ,"1 dtb@:":"1 y'f.)
+icatstr=: (3 : 'icat/ dtb@:":"1 y') : (4 : '(#":x) }. icat/ (":x) ,"1 dtb@:":"1 y')
 
 NB.=====================================================================
 NB.*icount v count of non-zero elements in an array
-icount=: 13 : '# (;y)-.0'
+icount=: 3 : '# (;y)-.0'
 
 NB.=====================================================================
 NB.*imean v arithmetic mean of non-zero elements in an array
-imean=: 13 : '(+/ % #) (;y)-.0'
+imean=: 3 : '(+/ % #) (;y)-.0'
 
 NB.=====================================================================
 NB.*iss v number of occurrences of content of field x in content of field y
-iss=: 13 : '#(dtb x)ss y'"1 f.
+iss=: 4 : '#(dtb x)ss y'"1
 
 NB.=====================================================================
 NB.*issf v first occurrence of content of field x in content of field y
 NB.+return _1 in case of no occurence
-issf=: 13 : '0{((dtb x)ss y),_1'"1 f.
+issf=: 4 : '0{((dtb x)ss y),_1'"1
 
 NB.=====================================================================
 NB.*issl v last occurrence of content of field x in content of field y
 NB.+return _1 in case of no occurence
-issl=: 13 : '_1{_1,(dtb x)ss y'"1 f.
+issl=: 4 : '_1{_1,(dtb x)ss y'"1
 
 NB.=====================================================================
 NB.*inum v format a numeric array as field of a dbj dynaset
 NB  if numbers are complex, only the real part is taken
-inum=: 13 : ',. (#,y) $ , y'
+inum=: 3 : ',. (#,y) $ , y'
 
 NB.=====================================================================
 NB.*istr v format a string array as field of a dbj dynaset
-istr=: 13 : ',:^:(2-#@$) y'
+istr=: 3 : ',:^:(2-#@$) y'
 
 NB.=====================================================================
 NB.*ifrm v format (if possible) a name as field (numeric or string) of a dbj dynaset
-ifrm=: 13 : 'inum`istr@.(2=3!:0) (>@:,)^:L. y'f.
+ifrm=: 3 : 'inum`istr@.(2=3!:0) (>@:,)^:L. y'
 
 NB.=====================================================================
 NB.*ibox v format (if possible) a name as field of a dbj dynaset, but strings are boxed
@@ -461,11 +460,11 @@ end.
 NB.=====================================================================
 NB.*isel v select the content of y=field1,:field2 using values of boolean vector x
 NB.+works also with more than 2 fields and an integer vector as selector
-isel=: 13 : 'dtb"1 (<"1 (,x),.i.#x) {y'f.
+isel=: 4 : 'dtb"1 (<"1 (,x),.i.#x) {y'
 
 NB.=====================================================================
 NB.*ieq v test where two fields (or a field and a string) have the same content
-ieq=: 13 : '(dtb x)-:dtb y'"1 f.
+ieq=: 4 : '(dtb x)-:dtb y'"1
 
 NB.=====================================================================
 NB.*iazgrade v grade up an inverted table, returning an integer vector
@@ -568,7 +567,7 @@ populate=: (1}. a:&~:(#;.1@(1&,)@[ # a:,#) ])&.(a:&,)
 
 NB.=====================================================================
 NB.*iprec v return x if y is an empty (or blank) string
-iprec=: [^:(''&-:@:(dtb@:]))f.
+iprec=: [^:(''&-:@:(dtb@:]))
 
 NB.=====================================================================
 NB.*ipopulate v fill empty strings of a string array with content of previous item
@@ -582,7 +581,7 @@ NB.+usage: mykey lookup boxedtable
 NB.+examples:
 NB.+'key2' lookup ('key1';'key2'),.('value1';'value2') NB. returns a single unboxed value
 NB.+('key2';'key1') lookup ('key1';'key2'),.('value1';'value2') NB. returns a list of boxed values
-lookup=: 13 : ';^:(1=#)_1{"1(((,each {."1 y)i.boxopen&,x)-.#y){y'
+lookup=: 4 : ';^:(1=#)_1{"1(((,each {."1 y)i.boxopen&,x)-.#y){y'
 
 NB.=====================================================================
 NB.*lookset v set a value in a two-columns boxed table
@@ -614,12 +613,12 @@ crono=: 3 : '(((": <. y%86400),''d '')&,)^:(y>86399) 8&{. 11&}. isotimestamp 1&t
 NB.=====================================================================
 NB.*dft v discrete fourier transform
 NB.+form: dft vector
-dft=: (13 : '+/ z * ^ (#z) %~ 0j_2p1 * */~ i.#z [ z=. ,y') :. ift
+dft=: (3 : '+/ z * ^ (#z) %~ 0j_2p1 * */~ i.#z [ z=. ,y') :. ift
 
 NB.=====================================================================
 NB.*ift v inverse fourier transform
 NB.+form: ift vector
-ift=: (13 : '+/ (z%#z) * ^ (#z) %~ 0j2p1 * */~ i.#z [ z=. ,y') :. dft
+ift=: (3 : '+/ (z%#z) * ^ (#z) %~ 0j2p1 * */~ i.#z [ z=. ,y') :. dft
 
 NB.=====================================================================
 NB.*pdi v poisson distribution (^-y)*(y^n) % !n
@@ -763,15 +762,14 @@ end.
 NB.=====================================================================
 NB.*readj v read a J variable from J binary file
 NB.+'(j)',LF or '(y)',LF or '(x)',LF prefixes are removed
-readj=: 13 : '(3!:2) 4 }. fread y'
+readj=: 3 : '(3!:2) 4 }. fread y'
 
 NB.=====================================================================
 NB.*chopdb v cut records y of a dbj file using separator x as fret
 NB.+deletes leading and trailing blanks from each row,
 NB.+separates fields, and tranforms each field in a box;
 NB.+as monad, the default separator '|' is used
-NB.+chopdb=: (3 : 'DBS chopdb y') : (4 : '<;._2 (dltb y),x')
-chopdb=: DBS&$: : ([: <;._2 [ ,~ [: dltb ])f.
+chopdb=: (3 : 'DBS chopdb y') : (4 : '<;._2 (dltb y),x')
 
 NB.=====================================================================
 NB.*checkrow v check a boxed table against empty keys
@@ -794,14 +792,14 @@ NB.*escape v remove field separator and LF from a string
 NB.+field separator, LF, CR, TAB, backslash are replaced 
 NB.+with escape sequences \s, \n, \r, \t, \b;
 NB.+as monad, the default separator '|' is used
-escape=: (13 : '(DBS;''\s'')sr(TAB;''\t'')sr(CR;''\r'')sr(LF;''\n'')sr(''\'';''\b'')sr y') : (13 : '(x;''\s'')sr(TAB;''\t'')sr(CR;''\r'')sr(LF;''\n'')sr(''\'';''\b'')sr y')
+escape=: (3 : '(DBS;''\s'')sr(TAB;''\t'')sr(CR;''\r'')sr(LF;''\n'')sr(''\'';''\b'')sr y') : (4 : '(x;''\s'')sr(TAB;''\t'')sr(CR;''\r'')sr(LF;''\n'')sr(''\'';''\b'')sr y')
 
 NB.=====================================================================
 NB.*unescape v restore field separator and LF in a string
 NB.+escape sequences \s, \n, \r, \t, \b are replaced with
 NB.+field separator, LF, CR, TAB, backslash;
 NB.+as monad, the default separator '|' is used
-unescape=: (13 : '(''\b'';''\'')sr(''\n'';LF)sr(''\r'';CR)sr(''\t'';TAB)sr(''\s'';DBS)sr y') : (13 : '(''\b'';''\'')sr(''\n'';LF)sr(''\r'';CR)sr(''\t'';TAB)sr(''\s'';x)sr y')
+unescape=: (3 : '(''\b'';''\'')sr(''\n'';LF)sr(''\r'';CR)sr(''\t'';TAB)sr(''\s'';DBS)sr y') : (4 : '(''\b'';''\'')sr(''\n'';LF)sr(''\r'';CR)sr(''\t'';TAB)sr(''\s'';x)sr y')
 
 NB.=====================================================================
 NB.*checksum v sum of all bytes of a file
@@ -1560,7 +1558,7 @@ new=. 'F' , (' ';'0') sr 3j0 ": >:<.>_1{/:~  toint each 1&}. each namesk y  NB. 
 :
 names=. namesk y                             NB. list of field names
 sel=. _2<4!:0]names                          NB. fields with valid J names
-(sel # names)=. _1{ sel #"1 y                NB. evaluate each field as an array
+(sel # names)=. sel # _1{y                   NB. evaluate each field as an array
 x=. , (<@":) ` (":&.>) @. (0 < L.) x         NB. check that x is one or more boxed string
 for_h.
   x
@@ -1620,7 +1618,7 @@ new=. 'F' , (' ';'0') sr 3j0 ": >:<.>_1{/:~  toint each 1&}. each namesk y  NB. 
 :
 names=. namesk y                             NB. list of field names
 sel=. _2<4!:0]names                          NB. fields with valid J names
-(sel # names)=. _1{ sel #"1 y                NB. evaluate each field as an array
+(sel # names)=. sel # _1{y                   NB. evaluate each field as an array
 x=. , (<@":) ` (":&.>) @. (0 < L.) x         NB. check that x is one or more boxed string
 for_h.
   x
@@ -1937,7 +1935,7 @@ sep ktable y
 
 NB.=====================================================================
 NB.*namesk v cleaned version of the field names of a dbj dynaset (without field types)
-namesk=: 13 : '(([: {. '':'' ss '':'' ,~ ]) {. '':'' ,~ ]) each 0{y'f.
+namesk=: 3 : '(([: {. '':'' ss '':'' ,~ ]) {. '':'' ,~ ]) each 0{y'
 
 NB.=====================================================================
 NB.*typesk v cleaned version of the field types of a dbj dynaset (without field names)
@@ -1947,11 +1945,11 @@ NB.+- add a leading 's' char where type is undefined
 NB.+- change to 's' the first char where first char is not 's','b','i','f' or 'c'
 NB.+- keep only the first char 's','b','i','f' or 'c' of the first word
 NB.+- remove any additional information for the type of the key field
-typesk=: 13 : '(0}~ [: 1&{.&.> 0 { ]) ([: (([: {. [: > [: {. ;:) , ] }.~ [: # [: > [: {. ;:) [: (''s''&(0}))^:([: -. (''s'';''b'';''i'';''f'';''c'') e.~ [: < {.) [: (''s''&,)^:(0=#) [: _1&}. ([: >: [: {. '':'' ss '':'' ,~ ]) }. '':'' ,~ ]) each 0{y'f.
+typesk=: 3 : '(0}~ [: 1&{.&.> 0 { ]) ([: (([: {. [: > [: {. ;:) , ] }.~ [: # [: > [: {. ;:) [: (''s''&(0}))^:([: -. (''s'';''b'';''i'';''f'';''c'') e.~ [: < {.) [: (''s''&,)^:(0=#) [: _1&}. ([: >: [: {. '':'' ss '':'' ,~ ]) }. '':'' ,~ ]) each 0{y'
 
 NB.=====================================================================
 NB.*typek v field types of a dbj dynaset (string-int-float-complex-boxed only)
-typek=: 13 : '((''s'';''string'')&sr)@:((''b'';''boxed'')&sr)@:((''c'';''complex'')&sr)@:((''f'';''float'')&sr)@:((''i'';''int'')&sr)@:(1&{.) each typesk y'
+typek=: 3 : '((''s'';''string'')&sr)@:((''b'';''boxed'')&sr)@:((''c'';''complex'')&sr)@:((''f'';''float'')&sr)@:((''i'';''int'')&sr)@:(1&{.) each typesk y'
 
 NB.=====================================================================
 NB.*ibody v return the body of a dbj dynaset, without the head
@@ -1966,45 +1964,45 @@ NB.=====================================================================
 NB.*iyesrow v select by numeric indexes rows (records) of a dbj dynaset
 NB.+x is an integer or a vector of integers;
 NB.+only the table body is returned; duplicated rows are allowed
-iyesrow=: 13 : 'dtb"1 each (<,x){ each _1{y'f.
+iyesrow=: 4 : 'dtb"1 each (<,x){ each _1{y'
 
 NB.=====================================================================
 NB.*iyescol v select by numeric indexes columns (fields) of a dbj dynaset
 NB.+x is an integer or a vector of integers;
 NB.+only the table body is returned; duplicated columns are allowed
-iyescol=: 13 : '(,x){_1{y'
+iyescol=: 4 : '(,x){_1{y'
 
 NB.=====================================================================
 NB.*kyesrow v select by numeric indexes rows (records) of a dbj dynaset
 NB.+x is an integer or a vector of integers;
 NB.+the output is checked against duplicated rows
-kyesrow=: 13 : '(1{.y) , dtb"1 each (<~.&.|.,x){ each _1{y'f.
+kyesrow=: 4 : '(1{.y) , dtb"1 each (<~.&.|.,x){ each _1{y'
 
 NB.=====================================================================
 NB.*kyescol v select by numeric indexes columns (fields) of a dbj dynaset
 NB.+x is an integer or a vector of integers;
 NB.+the first column (key field) is always preserved;
 NB.+the output is checked against duplicated columns
-kyescol=: 13 : '(~.&.|.0,x-.0){"1 y'
+kyescol=: 4 : '(~.&.|.0,x-.0){"1 y'
 
 NB.=====================================================================
 NB.*knotrow v unselect by numeric indexes rows (records) of a dbj dynaset
 NB.+x is an integer or a vector of integers
-knotrow=: 13 : '(1{.y) , dtb"1 each (<(i.#>0{_1{y)-.,x){ each _1{y'f.
+knotrow=: 4 : '(1{.y) , dtb"1 each (<(i.#>0{_1{y)-.,x){ each _1{y'
 
 NB.=====================================================================
 NB.*knotcol v unselect by numeric indexes columns (fields) of a dbj dynaset
 NB.+x is an integer or a vector of integers;
 NB.+the first column (key field) is always preserved
-knotcol=: 13 : '((i.1{$y)-.x-.0){"1 y'
+knotcol=: 4 : '((i.1{$y)-.x-.0){"1 y'
 
 NB.=====================================================================
 NB.*kfirst v select first x records (default 100) of a dbj dynaset
-kfirst=: 100&$: : (13 : '(i.x<.#>0{_1{y)kyesrow y')f.
+kfirst=: 100&$: : (4 : '(i.x<.#>0{_1{y)kyesrow y')
 
 NB.=====================================================================
 NB.*klast v select last x records (default 100) of a dbj dynaset
-klast=: 100&$: : (13 : '(|.->:i.x<.#>0{_1{y)kyesrow y')f.
+klast=: 100&$: : (4 : '(|.->:i.x<.#>0{_1{y)kyesrow y')
 
 NB.=====================================================================
 NB.*kselrow v select consecutive records of a dbj dynaset
@@ -2036,26 +2034,26 @@ end.
 NB.=====================================================================
 NB.*indrow v return indexes of keys of a dbj dynaset
 NB.+x is a boxed list of keys, or a numeric vector, or a string matrix
-indrow=: 13 : ',((,each)`(<@:dtb"1)@.(2=3!:0)x) i.~ <@:dtb"1 >@(0&{)@(_1&{) y'f.
+indrow=: 4 : ',((,each)`(<@:dtb"1)@.(2=3!:0)x) i.~ <@:dtb"1 >@(0&{)@(_1&{) y'
 
 NB.=====================================================================
 NB.*indcol v return indexes of field names of a dbj dynaset
 NB.+x is a boxed list of field names, or a string, or a string matrix
-indcol=: 13 : ',((,each)`(<@:dtb"1)@.(2=3!:0)x) i.~ namesk y'f.
+indcol=: 4 : ',((,each)`(<@:dtb"1)@.(2=3!:0)x) i.~ namesk y'
 
 NB.=====================================================================
 NB.*kclnrow v select unique and non-empty values in first column 
 NB.+(last value is the good one)
-kclnrow=: 13 : '(1{.y) , (<@(~:&.|. *. 0 < #@dtb"1)@>@{. # each ]) _1{y'f.
+kclnrow=: 3 : '(1{.y) , (<@(~:&.|. *. 0 < #@dtb"1)@>@{. # each ]) _1{y'
 
 NB.=====================================================================
 NB.*kclncol v select unique values in first row
 NB.+(last value is the good one)
-kclncol=: 13 : '(~:&.|. namesk y) #"1 y'f.
+kclncol=: 3 : '(~:&.|. namesk y) #"1 y'
 
 NB.=====================================================================
 NB.*kcln v apply kclncol and kclnrow to clean a dbj dynaset
-kcln=: 13 : 'kclnrow kclncol y'f. : [:
+kcln=: (3 : 'kclnrow kclncol y') : [:
 
 NB.=====================================================================
 NB.*irow v select by keys the rows (records) of a dbj dynaset
@@ -2063,8 +2061,7 @@ NB.+x is a boxed list of keys, or a numeric vector, or a string matrix;
 NB.+non-existing keys are ignored;
 NB.+as monad, return an empty record;
 NB.+only the table body is returned
-NB.+irow=: (3 : '(0$0) iyesrow y') : (4 : '(n-.m) iyesrow y [ n=. x indrow y [ m=. #>0{_1{y')
-irow=: (0$0)&iyesrow : (] iyesrow~ indrow -. [: # [: > 0 { _1 { ])f.
+irow=: (3 : '(0$0) iyesrow y') : (4 : '(n-.m) iyesrow y [ n=. x indrow y [ m=. #>0{_1{y')
 
 NB.=====================================================================
 NB.*icol v select by names the columns (fields) of a dbj dynaset
@@ -2072,15 +2069,14 @@ NB.+x is a boxed list of field names, or a string, or a string matrix;
 NB.+non-existing field names are ignored;
 NB.+as monad, return just the key column;
 NB.+only the table body is returned
-NB.+icol=: (3 : '0 iyescol y') : (4 : '(n-.m) iyescol y [ n=. x indcol y [ m=. 1{$y')
-icol=: 1&{.@:(_1&{) : (] iyescol~ indcol -. 1 { [: $ ])f.
+icol=: (3 : '0 iyescol y') : (4 : '(n-.m) iyescol y [ n=. x indcol y [ m=. 1{$y')
 
 NB.=====================================================================
 NB.*ifield v select by name the unboxed content of a column (field) of a dbj dynaset
 NB.+x is a boxed field name, or a string;
 NB.+non-existing field names are ignored;
 NB.+as monad, return the content of the key column
-ifield=: 13 : '0&{@:> x icol y'f.
+ifield=: (3 : '0&{@:> 0 iyescol y') : (4 : '0&{@:> x icol y')
 
 NB.=====================================================================
 NB.*krow v select by keys the records of a dbj dynaset
@@ -2088,8 +2084,7 @@ NB.+x is a boxed list of keys, or a numeric vector, or a string matrix;
 NB.+non-existing keys are ignored;
 NB.+the output is checked against duplicated rows;
 NB.+as monad, return the table head with 0 records
-NB.+krow=: (3 : '(0$0) kyesrow y') : (4 : '(n-.m) kyesrow y [ n=. x indrow y [ m=. #>0{_1{y')
-krow=: (0$0)&kyesrow : (] kyesrow~ indrow -. [: # [: > 0 { _1 { ])f.
+krow=: (3 : '(0$0) kyesrow y') : (4 : '(n-.m) kyesrow y [ n=. x indrow y [ m=. #>0{_1{y')
 
 NB.=====================================================================
 NB.*kcol v select by names the fields of a dbj dynaset, preserving key field;
@@ -2097,33 +2092,32 @@ NB.+x is a boxed list of field names, or a string, or a string matrix;
 NB.+the first column (key field) is always preserved;
 NB.+non-existing field names are ignored;
 NB.+as monad, return the table with just the key column
-NB.+kcol=: (3 : '1{."1 y') : (4 : '(n-.m) kyescol y [ n=. x indcol y [ m=. 1{$y')
-kcol=: (1&{."1) : (] kyescol~ indcol -. 1 { [: $ ])f.
+kcol=: (3 : '1{."1 y') : (4 : '(n-.m) kyescol y [ n=. x indcol y [ m=. 1{$y')
 
 NB.=====================================================================
 NB.*kfield v select by names the fields of a dbj dynaset;
 NB.+x is a boxed list of field names, or a string, or a string matrix;
 NB.+the resulting table can have less records, if the key column is changed;
 NB.+non-existing field names can cause errors
-kfield=: 13 : 'kclnrow n {"1 y [ n=. (x indcol y)-.m [ m=. 1{$y'f.
+kfield=: 4 : 'kclnrow n {"1 y [ n=. (x indcol y)-.m [ m=. 1{$y'
 
 NB.=====================================================================
 NB.*khead v return the first row (head of table y) of selected column(s) (field x)
 NB.+x is a boxed list of field names, or a string, or a string matrix;
 NB.+non-existing field names can cause errors;
 NB.+as monad returns the head of key field
-khead=: (13 : 'krow kcol y'f.) : (13 : 'krow x kfield y'f.)
+khead=: (3 : 'krow kcol y') : (4 : 'krow x kfield y')
 
 NB.=====================================================================
 NB.*kdelrow v delete by keys the rows (records) of a dbj dynaset
 NB.+x is a boxed list of keys, or a numeric vector, or a string matrix;
-kdelrow=: 13 : '(x indrow y) knotrow y'f.
+kdelrow=: 4 : '(x indrow y) knotrow y'
 
 NB.=====================================================================
 NB.*kdelcol v delete by names the columns (fields) of a dbj dynaset
 NB.+x is a boxed list of field names, or a string, or a string matrix;
 NB.+the first column (key field) is always preserved;
-kdelcol=: 13 : '(x indcol y) knotcol y'f.
+kdelcol=: 4 : '(x indcol y) knotcol y'
 
 NB.=====================================================================
 NB.*ks v evaluate a string to get a dbj dynaset, and return a slice of records
@@ -2225,7 +2219,7 @@ kfilter=: 4 : 0
 if. 0<#>0{_1{y do.
   names=. namesk y               NB. list of field names
   sel=. _2<4!:0]names            NB. fields with valid J names
-  (sel # names)=. _1{ sel #"1 y  NB. evaluate each field as an array
+  (sel # names)=. sel # _1{y     NB. evaluate each field as an array
   n=. ,".":x
   (I.n) kyesrow y
 else.
@@ -2337,13 +2331,13 @@ NB.=====================================================================
 NB.*kazsort v sort up a dbj dynaset, using assigned fields
 NB.+x is a boxed list of field names, or a string, or a string matrix;
 NB.+without left argument, the table is sorted with the key column
-kazsort=: (13 : '(iazgrade _1{ kcol y) kyesrow y'f.) : (13 : '(iazgrade ((,each)`(<@:dtb"1)@.(2=3!:0)x) icol y) kyesrow y'f.)
+kazsort=: (3 : '(iazgrade _1{ kcol y) kyesrow y') : (4 : '(iazgrade ((,each)`(<@:dtb"1)@.(2=3!:0)x) icol y) kyesrow y')
 
 NB.=====================================================================
 NB.*kzasort v sort down a dbj dynaset, using assigned fields
 NB.+x is a boxed list of field names, or a string, or a string matrix;
 NB.+without left argument, the table is sorted with the key column
-kzasort=: (13 : '(izagrade _1{ kcol y) kyesrow y'f.) : (13 : '(izagrade ((,each)`(<@:dtb"1)@.(2=3!:0)x) icol y) kyesrow y'f.)
+kzasort=: (3 : '(izagrade _1{ kcol y) kyesrow y') : (4 : '(izagrade ((,each)`(<@:dtb"1)@.(2=3!:0)x) icol y) kyesrow y')
 
 NB.=====================================================================
 NB.*cell v return the unboxed content of a single element of a dbj dynaset
@@ -2607,23 +2601,10 @@ kclnrow ,.(0{namesk y),ifb x&bcatstr"1 bfi _1{kunbox y
 )
 
 NB.=====================================================================
-NB.*kjoin v join two fields of different tables producing a three-columns output
-NB.+only relevant columns (keys of db1, f1, f2) are present in output
-NB.+usage: (db2;'f2') kjoin (db1;'f1')
-kjoin=: 4 : 0
-fx=. ,>1{x
-x=. >0{x
-fy=. ,>1{y
-y=. >0{y
-sel=. <@:dtb"1 fy ifield y
-(fy kcol y) ,. (<fy,'_',fx) , (< tolower 0&{@:> 1{ fx khead x) , _1{ sel irow fx kcol x
-)
-
-NB.=====================================================================
 NB.*krnd v return random records from a dbj dynaset
 NB.+as dyad, x (a positive integer) records of y are returned;
 NB.+as monad, a random permutation of all records is returned;
-krnd=: (13 : '(#>0{_1{ y) krnd y') : (13 : '(((1>.toint x)<.z) ? z)kyesrow y [ z=. #>0{_1{y')
+krnd=: (3 : '(#>0{_1{ y) krnd y') : (4 : '(((1>.toint x)<.z) ? z)kyesrow y [ z=. #>0{_1{y')
 
 NB.=====================================================================
 NB.*ktrans v transpose a dbj dynaset swapping rows and columns
@@ -3301,13 +3282,17 @@ if. 0 = # ,":y do. asc=. ,'A' else. asc=. ,":y end.
 
 NB.=====================================================================
 NB.*kmerge v merge the contents of two dbj dynasets of active database
-NB.+merging is possible only if the two key fields have same name and same type,
-NB.+and if the set of keys or the set of field names are identical
+NB.+merging is possible only if the set of field names are identical,
+NB.+or the set of keys are identical, or key fields are of same type
 kmerge=: 4 : 0
-if. (krow x) -: (krow y) do.      NB. same fields (like kud)
+if. (krow x) -: (krow y) do. NB. same fields (similar to kud, but with AZ sorting)
   kazsort kclnrow (1{.x),(_1{x),each _1{y
-elseif. (kcol x) -: (kcol y) do.  NB. same keys (like klr, but keys of x are always preserved)
-  kazsort kclncol x ,"1 (1}."1 y)
+elseif. ((1{kcol x) -: 1{kcol y) *. -.(0{headk x) e. 1}.headk y do. NB. same keys (similar to klr, but keys of x are always preserved, and key field of y is removed)
+  kclncol x ,"1 (1}."1 y)
+elseif. ((0{typek x) -: 0{typek y) *. -.(0{headk x) e. 1}.headk y do. NB. same type of keys (only common keys of x and y are kept)
+  r=. (ifield x) krow y
+  l=. (ifield y) krow x
+  kclncol ((ifield r) krow l) ,"1 (1}."1 r)
 elseif. do.
   assert. 'Tables cannot be merged'
 end.

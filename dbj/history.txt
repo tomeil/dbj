@@ -79,4 +79,13 @@ data/dbj - change history
  * jandroid compatibility - colwidth management in GUI - help file moved to examples
 
 == 4.4.1 ==
- * fixed jhs GUI; added parametric query
+ * fixed jhs GUI; added parametric query; modified kmerge verb; removed kjoin verb
+
+== 4.4.2 ==
+ * j805 and removed most tacit definitions for bug in 13 :
+
+== 4.4.3 ==
+ * compatibility with new jhs
+
+== 4.4.4 ==
+ * j806 and compatibility with new jhs
